@@ -1,16 +1,10 @@
-module precision_mod
-    use iso_fortran_env, only: real64
-    implicit none
-    integer, parameter :: pr=real64
-end module precision_mod
-
 module BE
     implicit none
     integer :: Ninit
 end module BE
 
 module MassFracAndMoles
-    use precision_mod, only: pr
+    use constants, only: pr
     implicit none
     integer, parameter :: imax = 48
     real(pr), dimension(imax) :: w, rn
@@ -19,7 +13,8 @@ end module MassFracAndMoles
 
 module data
 
-    use precision_mod, only: pr
+    use constants, only: pr
+    !use types, only: FluidData
 
     implicit none
     integer :: nv, nv1, nNcut, nNdef
@@ -117,9 +112,12 @@ contains
 
 end module data
 
+
+
+
 module routines
 
-    use precision_mod, only: pr
+    use constants, only: pr
     use data
 contains
 
