@@ -2,12 +2,17 @@ program main
 
 
    use data_from_input, only: data_from_file, FluidData 
+   use routines
    !use constants, only: pr
    !use routines
    !use data
 
    implicit none
-
+   real(pr) :: a !! output real variable. Slope of the best regression line.
+   real(pr) :: b !! output real variable. Intercept of the best regression line.
+   real(pr):: r2 !! output real variable. Square correlation coefficient.
+   integer :: ninit !! minimum carbon number obtained from the best linear regression
+   real(pr), allocatable :: ylog(:)
 
    !integer :: i,j, file_unit_1, file_unit_2, file_unit_3, Nfluid, Ncut, Ndef, Nps, maxC
    !integer, parameter :: maxD=15, imax=48
@@ -23,23 +28,31 @@ program main
    !logical :: start
 
 
-
    !integer, parameter :: n=5
    !real(pr), dimension(n):: array
-
+   
    integer :: i 
    type(FluidData) :: asd
    asd = data_from_file(file="oil1.nml")
-   print*, asd%def_comp_names
-   print*, asd%scn_z
- 
+   allocate(ylog(asd%scn_nc))
+   !print*, asd%def_comp_names
+   !print*, asd%scn_z
+   ylog = log(asd%scn_z)
+   call Best_Linear_Regression(asd%scn_nc,asd%scn,ylog,asd%plus_z,a,b,r2,ninit)
+
+   !print*, "-------------------------------"
+   !do i = 1, asd%def_comp_nc+asd%scn_nc+1
+   !   print*, asd%w(i)
+   !end do
+   print*, "-------------------------------"
    do i = 1, asd%scn_nc
       print*, asd%scn_z(i)
    end do
-
-
-
-
+   print*, "-------------------------------"
+   do i = 1, asd%scn_nc
+      print*, asd%scn(i)
+   end do
+   print*, asd%plus_z
 
    !call data_in(Nfluid,Oil,Ncut,Ndef,DefComp,zdef,rMdef,rCN,zcomp,rMW,&
    !   Den,Plus, rMWplus, DenPlus,Nps,wat,watPlus,zM,zMp,Z6p,sumV,w,rn)
@@ -75,10 +88,6 @@ program main
    !print*, '-----------------------------------------'
 
    !end do
-
-
-
-
 
 end program main
 
