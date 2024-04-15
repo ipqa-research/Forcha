@@ -8,10 +8,11 @@ program main
    !use data
 
    implicit none
-   real(pr) :: a !! output real variable. Slope of the best regression line.
-   real(pr) :: b !! output real variable. Intercept of the best regression line.
-   real(pr):: r2 !! output real variable. Square correlation coefficient.
+   real(pr) :: abe, a_lim, a_60! output real variable. Slope of the best regression line.
+   real(pr) :: bbe , b_lim, b_60 !! output real variable. Intercept of the best regression line.
+   real(pr):: r2, half!! output real variable. Square correlation coefficient.
    integer :: ninit !! minimum carbon number obtained from the best linear regression
+   integer :: c_max_blr, c_max_lim, c_max_60 !
    real(pr), allocatable :: ylog(:)
 
    !integer :: i,j, file_unit_1, file_unit_2, file_unit_3, Nfluid, Ncut, Ndef, Nps, maxC
@@ -38,8 +39,12 @@ program main
    !print*, asd%def_comp_names
    !print*, asd%scn_z
    ylog = log(asd%scn_z)
-   call Best_Linear_Regression(asd%scn_nc,asd%scn,ylog,asd%plus_z,a,b,r2,ninit)
-
+   
+   call Best_Linear_Regression(asd%scn_nc,asd%scn,ylog,asd%plus_z,abe,bbe,r2,ninit,c_max_blr)
+   call LimitLine(asd%scn_nc,asd%scn,asd%plus_z,abe,bbe,a_lim,b_lim,c_max_lim,half)
+   call  Line_C60_max (asd%scn_nc,asd%scn,asd%plus_z,abe,bbe,half,a_60,b_60,c_max_60)
+   print*, half
+   
    !print*, "-------------------------------"
    !do i = 1, asd%def_comp_nc+asd%scn_nc+1
    !   print*, asd%w(i)
