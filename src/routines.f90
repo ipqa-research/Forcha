@@ -1,5 +1,13 @@
 module routines
    use constants
+   use data_from_input, only: data_from_file, FluidData 
+
+   implicit none
+   type(FluidData) :: oil
+   
+   
+   
+
 contains
 
    subroutine Linear_Regression(x,y,a,b,r2)
@@ -124,7 +132,7 @@ contains
 
       c_max_blr=x_aux
 
-      print*, a, b, c_max_blr, r2, n_init
+      !print*, a, b, c_max_blr, r2, n_init
 
    end subroutine Best_Linear_Regression
 
@@ -148,7 +156,7 @@ contains
       !A and B limit calculation.
       z_lim = 0.0_pr
       half = 0.506_pr ! modified by oscar, the variable half was removed fron the argument
-      print*, scn
+      !print*, scn
       do while (z_lim.lt.plus_z)
          half = half + 0.002d0
          cross_cn = scn(scn_nc)+half   ! typically 19.508 in first try
@@ -166,10 +174,9 @@ contains
       end do
 
       c_max_lim = x_aux
-      
-      print*, a_lim,b_lim,c_max_lim
-   end subroutine LimitLine
+      !print*, a_lim,b_lim,c_max_lim
 
+   end subroutine LimitLine
 
    subroutine Line_C60_max (scn_nc,scn,plus_z,a_blr,b_blr,half,a_60,b_60,c_max_60)
       !! This subroutine obtains the Cmax60 line constants for an oil
@@ -188,7 +195,6 @@ contains
       real(pr) :: z_sum, cross_cn, z_cross, z_aux, F_tol, a_tol, var_range
       real(pr) :: a_old, Zp_60, F, dF_dA
 
-      
       cross_cn = scn(scn_nc)+half   ! typically 19.51
       z_cross= exp((a_blr*cross_cn)+b_blr)
       F_tol=1_pr
@@ -218,9 +224,190 @@ contains
 
       c_max_60=x_aux
 
-      print*, a_60,b_60,c_max_60
-
+      !print*, a_60,b_60,c_max_60
    end subroutine Line_C60_max
+
+
+
+   subroutine difference_M_from_C(file,method, mw_source,start,plus_z,plus_mw,scn_z,C,c_max,difference)
+      !! para un dado valor de C esta subrutina calcula
+
+      implicit none
+
+      character(len=*), intent(in) :: file !! file name
+      character(len=*), intent(in) :: method
+      character(len=*), intent(in) :: mw_source
+      logical :: start !! logical variable that indicates the initialization of the routine
+      integer :: i
+      integer, intent(out) :: c_max !!output CN at which Zp is reached, as the summation of single z(i) from the seleted distribution.
+      real(pr):: C !! C constants which is used in equation \[M = 84-C(i-6)\]
+      real(pr), allocatable, intent(out) :: scn_z(:) !! set of corresponding calculated mole fractions of scn cuts
+      real(pr), intent(out) :: difference !!
+      real(pr), allocatable :: scn_mw(:) !! set to molecular weights calculated by \[M = 84-C(i-6)\]
+      real(pr) :: sum_def_comp_z_plus !! compositions sum from (define component +1) to (plus component)
+      real(pr) :: plus_mw !!  calculated molecular weight of  residual fraction
+      real(pr) :: plus_z!! calculated composition of residual fraction
+      real(pr) :: sum_z
+      real(pr), allocatable :: log_scn_z(:)
+
+
+      call mw_plus_calc(file,method, mw_source, start,log_scn_z,plus_z,plus_mw,C,difference,c_max,sum_z,i)
+      print*, i, sum_z ! agregado
+
+      do while (i==300.and.sum_z<plus_z)
+         call  mw_plus_calc(file,method, mw_source, start,log_scn_z,plus_z,plus_mw,C,difference,c_max,sum_z,i)
+         if(start) C = C - 0.07 ! if loop modified by  do while loop to remove 'go to'
+         if(.not.start) C = C - 0.01
+      end do
+
+      
+      print*, c_max
+      
+      
+
+   end subroutine difference_M_from_C
+
+
+   subroutine mw_plus_calc(file,method, mw_source, start,log_scn_z,plus_z,plus_mw,C,difference,c_max,sum_z,i)
+
+      !! this subroutine ...
+      implicit none
+
+      logical :: start
+      character(len=*), intent(in) :: file !! file name
+      character(len=*), intent(in) :: method
+      character(len=*), intent(in) :: mw_source
+      integer, intent(out) :: c_max !! output CN at which plus_z is reached, as the summation of single z(i) from the best linear distribution (blr)
+      real(pr), allocatable :: scn_z(:) !! set of corresponding calculated mole fractions of scn cuts
+      integer :: n_init ! minimum carbon number obtained from the best linear regression
+      real(pr), allocatable :: log_scn_z(:) !! logarithm of corresponding mole fractions of scn cuts
+      real(pr) :: C !! C constants which is used in equation \[M = 84-C(i-6)\]
+      real(pr) :: plus_z !! composition of residual fraction from input file
+      real(pr) :: plus_mw !!  calculated molecular weight of  residual fraction
+      real(pr) :: plus_mw_cal !!  calculated molecular weight of  residual fraction
+      real(pr), intent(out) :: difference !!
+      real(pr) :: a !! output real variable. Slope of the best regression line.
+      real(pr) :: b !! output real variable. Intercept of the best regression line.
+      real(pr) :: r2 !! output real variable. Square correlation coefficient.
+      real(pr), allocatable ::  x_blr(:), y_blr(:)
+      real(pr) :: a_blr, b_blr, a_60, b_60, a_lim, b_lim, half
+      real(pr) :: r2_old,r2_best, a_old, b_old, a_best, b_best, z_sum, z_aux
+      real(pr), dimension(300) :: plus_z_i
+      real(pr), dimension(300)  :: product_z_mw_plus_i
+      !real(pr) ::  plus_mw
+      real(pr), intent(inout) :: sum_z
+      integer :: j, k , k_old, n_best, x_aux, i_0! internal variables
+      integer :: c_max_blr, c_max_lim, c_max_60
+      integer :: i
+      real(pr), allocatable :: scn_mw(:) !! set to molecular weights calculated by \[M = 84-C(i-6)\]
+      real(pr) :: sum_def_comp_z_plus !! compositions sum from (define component +1) to (plus component)
+
+
+
+      oil = data_from_file(file)
+
+      allocate(scn_z(oil%scn_nc))
+      allocate(scn_mw(oil%scn_nc))
+      allocate(log_scn_z(oil%scn_nc))
+
+      allocate(x_blr(oil%scn_nc))
+      allocate(y_blr(oil%scn_nc))
+
+      ! select case
+
+
+      call select_method(file,method, mw_source,C,log_scn_z,plus_z,plus_mw)
+
+
+      call Best_Linear_Regression(oil%scn_nc,oil%scn,log_scn_z,plus_z,a_blr,b_blr,r2, &
+            n_init,c_max_blr)
+      call LimitLine(oil%scn_nc,oil%scn,plus_z,a_blr,b_blr,a_lim,b_lim,c_max_lim,half)
+      call Line_C60_max (oil%scn_nc,oil%scn,plus_z,a_blr,b_blr,half,a_60,b_60,c_max_60) ! add line by oscar.
+
+      i_0 = oil%scn(oil%scn_nc)
+
+      if(a_blr < a_lim)then ! added by oscar 05/12/2023.se elimina por que se agregan las restriccones para C>12 y C<12.
+         a = a_lim
+         b = b_lim
+      else  ! this line was removed call Line_C60_max
+         if(a_blr > a_60)then
+            a = a_60
+            b = b_60
+         else
+            a = a_blr
+            b = b_blr
+         end if
+      end if
+
+      sum_z = 0.0_pr
+      i = 0
+      do while (sum_z<plus_z.and.i<300)
+         i = i+1
+         plus_z_i(i) = exp(a*(i+i_0)+b)
+         sum_z = sum_z + plus_z_i(i)
+         product_z_mw_plus_i(i) = plus_z_i(i)*(84+C*(i+i_0-6))
+      end do
+
+      plus_z_i(i) = plus_z_i(i) - (sum_z-plus_z) !   Adjustment to Zp (z20+)
+      product_z_mw_plus_i(i) = plus_z_i(i)*(84+C*(i+i_0-6))
+      plus_mw_cal = sum(product_z_mw_plus_i(1:i))/plus_z
+      difference = plus_mw_cal-plus_mw
+      c_max = i+i_0
+      print*, a, b
+      print*, plus_mw_cal, plus_mw
+
+   end subroutine mw_plus_calc
+
+
+   subroutine select_method(file,method, mw_source,C,log_scn_z,plus_z, plus_mw)
+      
+      implicit none 
+      character(len=*), intent(in) :: file !! file name
+      character(len=*), intent(in) :: method
+      character(len=*), intent(in) :: mw_source
+      real(pr), allocatable :: scn_mw(:) !! set to molecular weights calculated by \[M = 84-C(i-6)\]
+      real(pr) :: C !! C constants which is used in equation \[M = 84-C(i-6)\]
+      real(pr), allocatable :: scn_z(:) !! set of corresponding calculated mole fractions of scn cuts
+      real(pr) :: sum_def_comp_z_plus !! compositions sum from (define component +1) to (plus component)
+      real(pr), intent(out) :: plus_z !! composition of residual fraction from input file
+      real(pr), intent(out) :: plus_mw !!  calculated molecular weight of  residual fraction
+      real(pr), allocatable, intent(out) :: log_scn_z(:) !! logarithm of corresponding mole fractions of scn cuts
+      
+      oil = data_from_file(file)
+
+      allocate(scn_z(oil%scn_nc))
+      allocate(scn_mw(oil%scn_nc))
+      allocate(log_scn_z(oil%scn_nc))
+
+      select case (method)
+         
+         case("global_mw")
+            scn_mw = 84 + C*(oil%scn-6)
+            scn_z = oil%product_z_mw_scn / scn_mw
+            sum_def_comp_z_plus = sum(oil%scn_z) + (oil%plus_z)
+            plus_z = sum_def_comp_z_plus - sum(scn_z) ! new molar fraction for residual cut, based on C
+            plus_mw = oil%product_z_mw_plus / plus_z
+            log_scn_z = log(scn_z)
+            
+         case("plus_mw")
+
+            if (mw_source=="experimental")then
+               print*, "******************************"
+            end if 
+            if (mw_source=="calculated")then
+               print*, "+++++++++++++++++++++++++"
+            end if
+            
+         
+         
+         end select 
+
+   
+   end subroutine select_method
+
+
+
+
 
 end module routines
 
