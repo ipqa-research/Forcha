@@ -114,6 +114,12 @@ program main
    call select_method(fluid,"global_mw","calculate",C,log_scn_z,plus_z,plus_mw )
       
    print*, plus_z, C
+
+   call select_method(fluid,"plus_mw","experimental",C,log_scn_z,plus_z,plus_mw )
+   print*, plus_z, C
+   call select_method(fluid,"plus_mw","calculate",C,log_scn_z,plus_z,plus_mw )
+   print*, plus_z, C
+
 end program main
 
 

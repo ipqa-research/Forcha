@@ -19,6 +19,9 @@ module dtypes
       real(pr) :: plus_z !! composition of residual fraction
       real(pr) :: plus_mw !!  molecular weight of residual fraction 
       real(pr) :: product_z_mw_plus !! product between composition and molecular weight of residual fraction
+      real(pr), allocatable :: def_comp_w(:) !! mass fractions of the defined compounds
+      real(pr), allocatable :: scn_w(:) !! !! mass fractions of the scn-s compounds
+      real(pr) :: plus_w !! mass fractions of the plus fraction
 
 
 

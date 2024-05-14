@@ -79,7 +79,7 @@ contains
    end subroutine read_molecular_weight
 
    subroutine mass_fractions(file, w, product_z_mw_def_comp, product_z_mw_scn,&
-      sum_z_mw_i, product_z_mw_plus)
+      sum_z_mw_i, product_z_mw_plus, def_comp_w, scn_w, plus_w)
       !! This routine obtains the mass fractions of the fluid's compounds from
       !! the input file, additionally, it calculates the product \[(z*mw)_{i}\]
       character(len=*), intent(in) :: file !! file name
@@ -98,6 +98,9 @@ contains
       real(pr), allocatable  :: scn_mw(:) !! set of corresponding molecular weights of scn cuts
       real(pr) :: plus_mw !!  molecular weight of residual fraction
       real(pr), allocatable :: product_z_mw_i(:)
+      real(pr), allocatable, intent(out) :: def_comp_w(:)
+      real(pr), allocatable, intent(out) :: scn_w(:)
+      real(pr), intent(out) :: plus_w
 
       call read_setup(file, def_comp_nc, scn_nc)
       allocate(product_z_mw_def_comp(def_comp_nc))
@@ -108,6 +111,8 @@ contains
       allocate(scn_mw(scn_nc))
       allocate(w(1+def_comp_nc+scn_nc))
       allocate(product_z_mw_i(1+def_comp_nc+scn_nc))
+      allocate(def_comp_w(def_comp_nc))
+      allocate(scn_w(scn_nc))
 
       call read_composition(file, def_comp_z, scn_z, plus_z)
       call read_molecular_weight(file, def_comp_mw, scn_mw, plus_mw)
@@ -118,6 +123,9 @@ contains
       product_z_mw_i = [product_z_mw_def_comp, product_z_mw_scn, product_z_mw_plus]
       sum_z_mw_i = sum(product_z_mw_i)
       w = (product_z_mw_i) / (sum_z_mw_i)
+      def_comp_w = w(1:def_comp_nc)
+      scn_w = w(def_comp_nc+1: def_comp_nc+scn_nc)
+      plus_w = w(def_comp_nc+scn_nc+1)
    end subroutine mass_fractions
 
 
@@ -132,7 +140,12 @@ contains
       call read_molecular_weight(file, data%def_comp_mw, data%scn_mw, &
          data%plus_mw)
       call mass_fractions(file, data%w, data%product_z_mw_def_comp, &
-         data%product_z_mw_scn, data%sum_z_mw_i, data%product_z_mw_plus)
+         data%product_z_mw_scn, data%sum_z_mw_i, data%product_z_mw_plus, &
+         data%def_comp_w, data%scn_w, data%plus_w)
+
+
+         
+         
    end function data_from_file
 
 end module data_from_input
