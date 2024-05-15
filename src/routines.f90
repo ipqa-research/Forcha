@@ -4,9 +4,6 @@ module routines
 
    implicit none
    type(FluidData) :: oil
-   
-   
-   
 
 contains
 
@@ -227,37 +224,6 @@ contains
       !print*, a_60,b_60,c_max_60
    end subroutine Line_C60_max
 
-   subroutine difference_M_from_C(file,method, mw_source,start,plus_z,plus_mw,scn_z,C,c_max,difference)
-      !! para un dado valor de C esta subrutina calcula
-
-      implicit none
-
-      character(len=*), intent(in) :: file !! file name
-      character(len=*), intent(in) :: method
-      character(len=*), intent(in) :: mw_source
-      logical :: start !! logical variable that indicates the initialization of the routine
-      integer :: i
-      integer, intent(out) :: c_max !!output CN at which Zp is reached, as the summation of single z(i) from the seleted distribution.
-      real(pr):: C !! C constants which is used in equation \[M = 84-C(i-6)\]
-      real(pr), allocatable, intent(out) :: scn_z(:) !! set of corresponding calculated mole fractions of scn cuts
-      real(pr), intent(out) :: difference !!
-      real(pr), allocatable :: scn_mw(:) !! set to molecular weights calculated by \[M = 84-C(i-6)\]
-      real(pr) :: sum_def_comp_z_plus !! compositions sum from (define component +1) to (plus component)
-      real(pr) :: plus_mw !!  calculated molecular weight of  residual fraction
-      real(pr) :: plus_z!! calculated composition of residual fraction
-      real(pr) :: sum_z
-      real(pr), allocatable :: log_scn_z(:)
-
-      call difference_mw_plus(file,method, mw_source, start,log_scn_z,plus_z,plus_mw,C,difference,c_max,sum_z,i)
-      print*, i, sum_z ! agregado
-      do while (i==300.and.sum_z<plus_z)
-         call  difference_mw_plus(file,method, mw_source, start,log_scn_z,plus_z,plus_mw,C,difference,c_max,sum_z,i)
-         if(start) C = C - 0.07 ! if loop modified by  do while loop to remove 'go to'
-         if(.not.start) C = C - 0.01
-      end do
-      print*, c_max
-   end subroutine difference_M_from_C
-
    subroutine select_method(file,method, mw_source,C,log_scn_z,plus_z, plus_mw)
       
       implicit none 
@@ -269,7 +235,7 @@ contains
       real(pr), allocatable :: scn_z(:) !! set of corresponding calculated mole fractions of scn cuts
       real(pr) :: sum_def_comp_z_plus !! compositions sum from (define component +1) to (plus component)
       real(pr), intent(out) :: plus_z !! composition of residual fraction from input file
-      real(pr), intent(out) :: plus_mw !!  calculated molecular weight of  residual fraction
+      real(pr) :: plus_mw !!  calculated molecular weight of  residual fraction
       real(pr), allocatable, intent(out) :: log_scn_z(:) !! logarithm of corresponding mole fractions of scn cuts
       real(pr), allocatable :: def_comp_moles(:)
       real(pr), allocatable :: scn_moles(:)
@@ -318,7 +284,7 @@ contains
 
    end subroutine select_method
 
-   subroutine difference_mw_plus(file,method, mw_source, start,log_scn_z,plus_z,plus_mw,C,difference,c_max,sum_z,i)
+   subroutine difference_mw_plus(file,method, mw_source, start,C,difference,plus_mw)
 
       !! this subroutine ...
       implicit none
@@ -327,7 +293,7 @@ contains
       character(len=*), intent(in) :: file !! file name
       character(len=*), intent(in) :: method
       character(len=*), intent(in) :: mw_source
-      integer, intent(out) :: c_max !! output CN at which plus_z is reached, as the summation of single z(i) from the best linear distribution (blr)
+      integer :: c_max !! output CN at which plus_z is reached, as the summation of single z(i) from the best linear distribution (blr)
       real(pr), allocatable :: scn_z(:) !! set of corresponding calculated mole fractions of scn cuts
       integer :: n_init ! minimum carbon number obtained from the best linear regression
       real(pr), allocatable :: log_scn_z(:) !! logarithm of corresponding mole fractions of scn cuts
@@ -345,7 +311,7 @@ contains
       real(pr), dimension(300) :: plus_z_i
       real(pr), dimension(300)  :: product_z_mw_plus_i
       !real(pr) ::  plus_mw
-      real(pr), intent(inout) :: sum_z
+      real(pr):: sum_z
       integer :: j, k , k_old, n_best, x_aux, i_0! internal variables
       integer :: c_max_blr, c_max_lim, c_max_60
       integer :: i
@@ -353,11 +319,11 @@ contains
       real(pr) :: sum_def_comp_z_plus !! compositions sum from (define component +1) to (plus component)
 
       oil = data_from_file(file)
+      
 
       allocate(scn_z(oil%scn_nc))
       allocate(scn_mw(oil%scn_nc))
       allocate(log_scn_z(oil%scn_nc))
-
       allocate(x_blr(oil%scn_nc))
       allocate(y_blr(oil%scn_nc))
 
@@ -407,6 +373,73 @@ contains
       print*, plus_mw_cal, plus_mw
 
    end subroutine difference_mw_plus
+
+   subroutine get_C_or_m_plus(file,method,mw_source,start,C)
+      !! This subroutine...
+      implicit none
+      logical :: start
+      character(len=*), intent(in) :: file !! file name
+      character(len=*), intent(in) :: method
+      character(len=*), intent(in) :: mw_source
+      integer :: c_max !! output CN at which plus_z is reached, as the summation of single z(i) from the best linear distribution (blr)
+      real(pr), allocatable :: log_scn_z(:) !! logarithm of corresponding mole fractions of scn cuts
+      real(pr) :: C !! C constants which is used in equation \[M = 84-C(i-6)\]
+      real(pr) :: plus_z !! composition of residual fraction from input file
+      real(pr) :: plus_mw !!  calculated molecular weight of  residual fraction
+      real(pr) :: difference !!
+      real(pr) :: difference_old, plus_mw_old
+      real(pr) :: C_old
+      integer :: aux
+      
+      if(method == 'global_mw') C=13
+      if(method == 'plus_mw') C=14
+      
+      Start = .true.
+      oil = data_from_file(file)
+      plus_mw = oil%plus_mw
+
+      call difference_mw_plus(file,method,mw_source,start,C,difference_old,plus_mw)
+      C_old = C
+      if(method == 'global_mw') C=min(12.8, C-0.07)
+      if(method == 'plus_mw') C=13.5
+      Start = .false.
+      call difference_mw_plus(file,method,mw_source,start,C,difference,plus_mw)
+
+      do while (abs(difference) > 0.1)
+         aux = C
+         C = C - difference*(C-C_old)/(difference-difference_old)
+         C_old = aux
+         difference_old = difference
+         call difference_mw_plus(file,method,mw_source,start,C,difference,plus_mw)
+      end do
+      print*, C
+
+      if(C>14) C=14
+      if(C<12) C=12
+
+      Start = .true. 
+      plus_mw = oil%plus_mw
+      call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference_old,plus_mw)
+      plus_mw_old = plus_mw
+      plus_mw = 0.9*plus_mw
+      Start = .false.
+      call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference,plus_mw)
+      
+      do while (abs(difference) > 0.00001)
+         aux = plus_mw
+         plus_mw = plus_mw - difference*(plus_mw-plus_mw_old)/(difference-difference_old)
+         plus_mw_old = aux
+         difference_old = difference
+         call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference,plus_mw)
+      end do
+      print*, C, plus_mw
+      
+
+
+
+
+
+   end subroutine get_C_or_m_plus
 
 
 

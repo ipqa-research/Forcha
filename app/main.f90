@@ -73,8 +73,16 @@ program main
    Start = .true.
    C= 14
    fluid = "oil1.nml"
-   call difference_M_from_C(fluid,"global_mw","calculate",start,plus_z,plus_mw,scn_z,C,c_max,difference)
-   print*, difference
+   !call difference_M_from_C(fluid,"global_mw","calculate",start,plus_z,plus_mw,scn_z,C,c_max,difference)
+   !print*, difference
+   !call difference_mw_plus(fluid,"plus_mw","calculated", start,C,difference,plus_mw)
+   
+
+   call get_C_or_m_plus(fluid,"global_mw","calculated",start,C)
+   !call get_C_or_m_plus(fluid,"plus_mw","calculated",start,C)
+   !call get_C_or_m_plus(fluid,"plus_mw","experimental",start,C)
+   !print*, '-------------------------------------------------------------------'
+   !call get_C_or_m_plus(fluid,"plus_mw","experimental",start,C,plus_mw)
 
    !call data_in(Nfluid,Oil,Ncut,Ndef,DefComp,zdef,rMdef,rCN,zcomp,rMW,&
    !   Den,Plus, rMWplus, DenPlus,Nps,wat,watPlus,zM,zMp,Z6p,sumV,w,rn)
@@ -111,14 +119,14 @@ program main
 
    !end do
    !allocate(log_scn_z(oil1%scn_nc))
-   call select_method(fluid,"global_mw","calculate",C,log_scn_z,plus_z,plus_mw )
+   !call select_method(fluid,"global_mw","calculate",C,log_scn_z,plus_z,plus_mw )
       
-   print*, plus_z, C
+   !print*, plus_z, C
 
-   call select_method(fluid,"plus_mw","experimental",C,log_scn_z,plus_z,plus_mw )
-   print*, plus_z, C
-   call select_method(fluid,"plus_mw","calculate",C,log_scn_z,plus_z,plus_mw )
-   print*, plus_z, C
+   !call select_method(fluid,"plus_mw","experimental",C,log_scn_z,plus_z,plus_mw )
+   !print*, plus_z, C
+   !call select_method(fluid,"plus_mw","calculate",C,log_scn_z,plus_z,plus_mw )
+   !print*, plus_z, C
 
 end program main
 
