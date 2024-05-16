@@ -4,9 +4,10 @@ module routines
 
    implicit none
    type(FluidData) :: oil
+   
 
 contains
-
+   
    subroutine Linear_Regression(x,y,a,b,r2)
       !! This subroutine computes the regression line for a data set of x, y variables.
       implicit none
@@ -389,7 +390,7 @@ contains
       real(pr) :: difference !!
       real(pr) :: difference_old, plus_mw_old
       real(pr) :: C_old
-      integer :: aux
+      real(pr) :: aux
       
       if(method == 'global_mw') C=13
       if(method == 'plus_mw') C=14
@@ -414,39 +415,48 @@ contains
       end do
       print*, C
 
-      if(C>14) C=14
-      if(C<12) C=12
-
-      Start = .true. 
-      plus_mw = oil%plus_mw
-      call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference_old,plus_mw)
-      plus_mw_old = plus_mw
-      plus_mw = 0.9*plus_mw
-      Start = .false.
-      call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference,plus_mw)
-      
-      do while (abs(difference) > 0.00001)
-         aux = plus_mw
-         plus_mw = plus_mw - difference*(plus_mw-plus_mw_old)/(difference-difference_old)
-         plus_mw_old = aux
-         difference_old = difference
+      if(C>14)then
+         C=14
+         Start = .true. 
+         plus_mw = oil%plus_mw
+         call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference_old,plus_mw)
+         plus_mw_old = plus_mw
+         plus_mw = 0.9*plus_mw
+         Start = .false.
          call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference,plus_mw)
-      end do
-      print*, C, plus_mw
-      
+         
+         do while (abs(difference) > 0.00001)
+            aux = plus_mw
+            plus_mw = plus_mw - difference*(plus_mw-plus_mw_old)/(difference-difference_old)
+            plus_mw_old = aux
+            difference_old = difference
+            call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference,plus_mw)
+         end do
+         print*, C, plus_mw
+      end if 
 
 
-
-
+      if(C<12)then
+         C=12
+         Start = .true. 
+         plus_mw = oil%plus_mw
+         call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference_old,plus_mw)
+         plus_mw_old = plus_mw
+         plus_mw = 0.9*plus_mw
+         Start = .false.
+         call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference,plus_mw)
+         
+         do while (abs(difference) > 0.00001)
+            aux = plus_mw
+            plus_mw = plus_mw - difference*(plus_mw-plus_mw_old)/(difference-difference_old)
+            plus_mw_old = aux
+            difference_old = difference
+            call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference,plus_mw)
+         end do
+         print*, C, plus_mw
+      end if 
 
    end subroutine get_C_or_m_plus
-
-
-
-
-
-
-
 
 end module routines
 
