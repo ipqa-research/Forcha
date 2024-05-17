@@ -26,10 +26,8 @@ program main
    
    
    type(FluidData) :: asd
-   asd = data_from_file(file="oil1.nml")
 
-   fluid = "oil2.nml"
-
+   fluid = "input.nml"
 
    call get_C_or_m_plus(fluid,"global_mw","calculated",start,C)
 
