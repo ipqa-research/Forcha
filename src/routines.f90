@@ -1,13 +1,12 @@
 module routines
    use constants
-   use data_from_input, only: data_from_file, FluidData 
+   use data_from_input, only: data_from_file, FluidData
 
    implicit none
    type(FluidData) :: oil
-   
 
 contains
-   
+
    subroutine Linear_Regression(x,y,a,b,r2)
       !! This subroutine computes the regression line for a data set of x, y variables.
       implicit none
@@ -226,8 +225,8 @@ contains
    end subroutine Line_C60_max
 
    subroutine select_method(file,method, mw_source,C,log_scn_z,plus_z, plus_mw)
-      
-      implicit none 
+
+      implicit none
       character(len=*), intent(in) :: file !! file name
       character(len=*), intent(in) :: method
       character(len=*), intent(in) :: mw_source
@@ -243,6 +242,7 @@ contains
       real(pr) :: plus_moles
       real(pr) :: total_moles
       
+
       oil = data_from_file(file)
 
       allocate(scn_z(oil%scn_nc))
@@ -250,38 +250,42 @@ contains
       allocate(log_scn_z(oil%scn_nc))
       allocate(def_comp_moles(oil%def_comp_nc))
       allocate(scn_moles(oil%scn_nc))
-      
+
 
       select case (method)
-         
-         case("global_mw")
-               scn_mw = 84 + C*(oil%scn-6)
-               scn_z = oil%product_z_mw_scn / scn_mw
-               sum_def_comp_z_plus = sum(oil%scn_z) + (oil%plus_z)
-               plus_z = sum_def_comp_z_plus - sum(scn_z) ! new molar fraction for residual cut, based on C
-               plus_mw = oil%product_z_mw_plus / plus_z
-               log_scn_z = log(scn_z)
-         
-         case("plus_mw")
-            def_comp_moles = (oil%def_comp_w)/(oil%def_comp_mw)
-            if (mw_source=="experimental")then
-                  scn_moles = (oil%scn_w)/(oil%scn_mw)
-                  plus_moles = (oil%plus_w)/(oil%plus_mw)
-                  total_moles = sum(def_comp_moles)+sum(scn_moles)+(plus_moles)
-                  scn_z =  scn_moles / total_moles
-                  plus_z = plus_moles / total_moles
-                  log_scn_z =  log(scn_z)
-            end if 
-            if (mw_source=="calculated")then
-                  scn_mw = 84 + C*(oil%scn-6)
-                  scn_moles = (oil%scn_w)/(scn_mw)
-                  plus_moles = (oil%plus_w)/(oil%plus_mw)
-                  total_moles = sum(def_comp_moles)+sum(scn_moles)+(plus_moles)
-                  scn_z =  scn_moles / total_moles
-                  plus_z = plus_moles / total_moles
-                  log_scn_z =  log(scn_z)
-            end if
-         end select 
+
+       case("global_mw")
+         if (mw_source=="experimental".or.mw_source=="calculated")then
+         scn_mw = 84 + C*(oil%scn-6)
+         scn_z = oil%product_z_mw_scn / scn_mw
+         sum_def_comp_z_plus = sum(oil%scn_z) + (oil%plus_z)
+         plus_z = sum_def_comp_z_plus - sum(scn_z) ! new molar fraction for residual cut, based on C
+         plus_mw = oil%product_z_mw_plus / plus_z
+         log_scn_z = log(scn_z)
+         end if
+
+       case("plus_mw")
+         def_comp_moles = (oil%def_comp_w)/(oil%def_comp_mw)
+         if (mw_source=="experimental")then
+            scn_moles = (oil%scn_w)/(oil%scn_mw)
+            plus_moles = (oil%plus_w)/(plus_mw)
+            !plus_moles = (oil%plus_w)/(oil%plus_mw)
+            total_moles = sum(def_comp_moles)+sum(scn_moles)+(plus_moles)
+            scn_z =  scn_moles / total_moles
+            plus_z = plus_moles / total_moles
+            log_scn_z =  log(scn_z) 
+         end if
+         if (mw_source=="calculated")then
+            scn_mw = 84 + C*(oil%scn-6)
+            scn_moles = (oil%scn_w)/(scn_mw)
+            !plus_moles = (oil%plus_w)/(oil%plus_mw)
+            plus_moles = (oil%plus_w)/(plus_mw)
+            total_moles = sum(def_comp_moles)+sum(scn_moles)+(plus_moles)
+            scn_z =  scn_moles / total_moles
+            plus_z = plus_moles / total_moles
+            log_scn_z =  log(scn_z)
+         end if
+      end select
 
    end subroutine select_method
 
@@ -320,20 +324,17 @@ contains
       real(pr) :: sum_def_comp_z_plus !! compositions sum from (define component +1) to (plus component)
 
       oil = data_from_file(file)
-      
-
       allocate(scn_z(oil%scn_nc))
       allocate(scn_mw(oil%scn_nc))
       allocate(log_scn_z(oil%scn_nc))
       allocate(x_blr(oil%scn_nc))
       allocate(y_blr(oil%scn_nc))
 
-      1 i_0 = oil%scn(oil%scn_nc)
+      1     i_0 = oil%scn(oil%scn_nc)
 
       call select_method(file,method, mw_source,C,log_scn_z,plus_z,plus_mw) ! select case
-
       call Best_Linear_Regression(oil%scn_nc,oil%scn,log_scn_z,plus_z,a_blr,b_blr,r2, &
-            n_init,c_max_blr)
+         n_init,c_max_blr)
       call LimitLine(oil%scn_nc,oil%scn,plus_z,a_blr,b_blr,a_lim,b_lim,c_max_lim,half)
       call Line_C60_max (oil%scn_nc,oil%scn,plus_z,a_blr,b_blr,half,a_60,b_60,c_max_60) ! add line by oscar.
 
@@ -358,20 +359,20 @@ contains
          sum_z = sum_z + plus_z_i(i)
          product_z_mw_plus_i(i) = plus_z_i(i)*(84+C*(i+i_0-6))
       end do
-      
+
       if (i==300.and.sum_z<plus_z)then
          if(start) C=C-0.07
          if(.not.start) C = C-0.01
          go to 1
-      end if 
+      end if
 
       plus_z_i(i) = plus_z_i(i) - (sum_z-plus_z) !   Adjustment to Zp (z20+)
       product_z_mw_plus_i(i) = plus_z_i(i)*(84+C*(i+i_0-6))
       plus_mw_cal = sum(product_z_mw_plus_i(1:i))/plus_z
       difference = plus_mw_cal-plus_mw
       c_max = i+i_0
-      print*, a, b
-      print*, plus_mw_cal, plus_mw
+      !print*, a, b
+      !print*,  plus_mw, plus_mw_cal
 
    end subroutine difference_mw_plus
 
@@ -391,10 +392,10 @@ contains
       real(pr) :: difference_old, plus_mw_old
       real(pr) :: C_old
       real(pr) :: aux
-      
+
       if(method == 'global_mw') C=13
       if(method == 'plus_mw') C=14
-      
+
       Start = .true.
       oil = data_from_file(file)
       plus_mw = oil%plus_mw
@@ -413,19 +414,22 @@ contains
          difference_old = difference
          call difference_mw_plus(file,method,mw_source,start,C,difference,plus_mw)
       end do
-      print*, C
+      print*, C, plus_mw
 
-      if(C>14)then
-         C=14
-         Start = .true. 
+      if(C>14.or.C<12)then
+
+         if(C>14) C=14
+         if(C<12) C=12
+
+         Start = .true.
          plus_mw = oil%plus_mw
          call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference_old,plus_mw)
          plus_mw_old = plus_mw
          plus_mw = 0.9*plus_mw
          Start = .false.
          call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference,plus_mw)
-         
-         do while (abs(difference) > 0.00001)
+
+         do while (abs(difference)>0.00001)
             aux = plus_mw
             plus_mw = plus_mw - difference*(plus_mw-plus_mw_old)/(difference-difference_old)
             plus_mw_old = aux
@@ -433,29 +437,7 @@ contains
             call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference,plus_mw)
          end do
          print*, C, plus_mw
-      end if 
-
-
-      if(C<12)then
-         C=12
-         Start = .true. 
-         plus_mw = oil%plus_mw
-         call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference_old,plus_mw)
-         plus_mw_old = plus_mw
-         plus_mw = 0.9*plus_mw
-         Start = .false.
-         call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference,plus_mw)
-         
-         do while (abs(difference) > 0.00001)
-            aux = plus_mw
-            plus_mw = plus_mw - difference*(plus_mw-plus_mw_old)/(difference-difference_old)
-            plus_mw_old = aux
-            difference_old = difference
-            call difference_mw_plus(file,"plus_mw",mw_source,start,C,difference,plus_mw)
-         end do
-         print*, C, plus_mw
-      end if 
-
+      end if
    end subroutine get_C_or_m_plus
 
 end module routines
