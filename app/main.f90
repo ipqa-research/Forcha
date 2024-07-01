@@ -19,13 +19,13 @@ program main
    
    
    
-   type(FluidData) :: asd
+   !type(FluidData) :: asd
    fluid = "oil2.nml"
    !call get_C_or_m_plus(fluid,"global_mw","calculated",start,C)
    !print*, C
-   !call get_C_or_m_plus(fluid,"plus_mw","calculated",start,C)
+   call get_C_or_m_plus(fluid,"plus_mw","calculated",start,C)
    !print*, C
-   call get_C_or_m_plus(fluid,"plus_mw","experimental",start,C)
+   !call get_C_or_m_plus(fluid,"plus_mw","experimental",start,C)
    print*, C
 
 end program main

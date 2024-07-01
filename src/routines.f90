@@ -269,7 +269,7 @@ contains
          if (mw_source=="experimental")then
             scn_moles = (oil%scn_w)/(oil%scn_mw)
             plus_moles = (oil%plus_w)/(plus_mw)
-            !plus_moles = (oil%plus_w)/(oil%plus_mw)
+            !plus_moles = (oil%plus_w)/(oil%plus_mw) modified by oscar
             total_moles = sum(def_comp_moles)+sum(scn_moles)+(plus_moles)
             scn_z =  scn_moles / total_moles
             plus_z = plus_moles / total_moles
