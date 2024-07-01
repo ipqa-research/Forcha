@@ -1,6 +1,6 @@
 ! Namelist based input file
 ! ==============================================================================
-!  - Oil 1 Pedersen
+!  - Oil 2 Pedersen
 !  - Composition: molar
 !  - Molecular Weights: g/mol
 !  - Density: g/cm3
@@ -21,21 +21,19 @@
         ! name of plus fraction
 /
 &nml_composition
-    def_comp_z = 0.0 0.0 0.0013	0.0050	0.0047	0.0055	0.0062	0.0108	0.0050 
-        ! compositions of defined components 
-    scn_z = 0.0189	0.0534	0.0854	0.0704	0.0680	0.0551	0.0500  
-            0.0558	0.0508	0.0466	0.038	0.0267	0.0249	0.0214
+    def_comp_z = 0 0 0 0.0001 0.0047 0.0058 0.0151 0.0168 0.0196
+            ! compositions of defined components 
+    scn_z = 0.0437 0.09	0.1071 0.0732 0.0623 0.055 0.0514 0.0443 0.048 0.0381 0.0282 0.0333 0.0234 0.0266  
         ! compositions of single carbon numbers
-    plus_z = 0.2961   
+    plus_z = 0.2133   
         ! composition of residual fraction 
 /
 &nml_molecular_weight
     def_comp_mw = 28.01 44.01 16 30.1 44.1 58.1 58.1 72.1 72.1   
         ! molecular weights of defined components 
-    scn_mw = 86.2 90.9 105.0 117.7 132.0 148.0 159.0  
-             172.0 185.0 197.0 209.0 227.0 243.0 254.0
+    scn_mw = 86.2 92.3 105.9 120.3 133 148	163	177	190	204	217	235	248	260
         ! molecular weights of single carbon numbers
-    plus_mw = 470.7 
+    plus_mw = 442.1
         ! molecular weight of residual fraction  
 /
 
