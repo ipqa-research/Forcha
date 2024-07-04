@@ -1,4 +1,4 @@
-module routines
+module pruebas
    use constants
    use data_from_input, only: data_from_file, FluidData
 
@@ -116,7 +116,7 @@ contains
       b=b_old
       n_init=scn(scn_nc-k_old+2)
 
-      22    continue
+22    continue
 
       z_sum = 0d0
       x_aux=scn(scn_nc)
@@ -241,7 +241,7 @@ contains
       real(pr), allocatable :: scn_moles(:)
       real(pr) :: plus_moles
       real(pr) :: total_moles
-      
+
 
       oil = data_from_file(file)
 
@@ -264,7 +264,7 @@ contains
          log_scn_z =  log(scn_z)
 
        case("calculated")
-         
+
          if (method=="global_mw")then
             scn_mw = 84 + C*(oil%scn-6)
             scn_z = oil%product_z_mw_scn / scn_mw
@@ -321,6 +321,9 @@ contains
       integer :: i
       real(pr), allocatable :: scn_mw(:) !! set to molecular weights calculated by \[M = 84-C(i-6)\]
       real(pr) :: sum_def_comp_z_plus !! compositions sum from (define component +1) to (plus component)
+      integer, dimension(300) :: carbon_number_plus
+      real(pr) :: denom
+
 
       oil = data_from_file(file)
       allocate(scn_z(oil%scn_nc))
@@ -329,7 +332,7 @@ contains
       allocate(x_blr(oil%scn_nc))
       allocate(y_blr(oil%scn_nc))
 
-      1     i_0 = oil%scn(oil%scn_nc)
+1     i_0 = oil%scn(oil%scn_nc)
 
       call select_method(file,mw_source,method,C,log_scn_z,plus_z,plus_mw) ! select case
       call Best_Linear_Regression(oil%scn_nc,oil%scn,log_scn_z,plus_z,a_blr,b_blr,r2, &
@@ -357,6 +360,8 @@ contains
          plus_z_i(i) = exp(a*(i+i_0)+b)
          sum_z = sum_z + plus_z_i(i)
          product_z_mw_plus_i(i) = plus_z_i(i)*(84+C*(i+i_0-6))
+         carbon_number_plus(i) = i+i_0
+         print*, carbon_number_plus(i)
       end do
 
       if (i==300.and.sum_z<plus_z)then
@@ -365,13 +370,20 @@ contains
          go to 1
       end if
 
+      c_max = i+i_0
       plus_z_i(i) = plus_z_i(i) - (sum_z-plus_z) !   Adjustment to Zp (z20+)
       product_z_mw_plus_i(i) = plus_z_i(i)*(84+C*(i+i_0-6))
-      plus_mw_cal = sum(product_z_mw_plus_i(1:i))/plus_z
-      difference = plus_mw_cal-plus_mw
-      c_max = i+i_0
-      !print*, a, b
-      !print*,  plus_mw, plus_mw_cal
+
+
+      if (mw_source=="experimental" .and. C)then
+         denom = sum((plus_z_i(1:i))*((carbon_number_plus(1:i)-6))) !! denominator of equation to obtain C value directly
+         C = (plus_z*(plus_mw-84))/denom
+      end if
+
+      if (mw_source=="calculated")then
+         plus_mw_cal = sum(product_z_mw_plus_i(1:i))/plus_z
+         difference = plus_mw_cal-plus_mw
+      endif
 
    end subroutine difference_mw_plus
 
@@ -392,28 +404,38 @@ contains
       real(pr) :: C_old
       real(pr) :: aux
 
-      if(method == 'global_mw') C=13
-      if(method == 'plus_mw') C=14
-
-      Start = .true.
       oil = data_from_file(file)
-      plus_mw = oil%plus_mw
-
-      call difference_mw_plus(file,mw_source,method,start,C,difference_old,plus_mw)
-      C_old = C
-      if(method == 'global_mw') C=min(12.8, C-0.07)
-      if(method == 'plus_mw') C=13.5
-      Start = .false.
-      call difference_mw_plus(file,mw_source,method,start,C,difference,plus_mw)
-
-      do while (abs(difference) > 0.1)
-         aux = C
-         C = C - difference*(C-C_old)/(difference-difference_old)
-         C_old = aux
-         difference_old = difference
+      select case (mw_source)
+       case("experimental")
+         C=14
+         plus_mw = oil%plus_mw
          call difference_mw_plus(file,mw_source,method,start,C,difference,plus_mw)
-      end do
-      print*, C, plus_mw
+         print*, C
+
+       case("calculated")
+
+         if(method == 'global_mw') C=13
+         if(method == 'plus_mw') C=14
+
+         Start = .true.
+         plus_mw = oil%plus_mw
+
+         call difference_mw_plus(file,mw_source,method,start,C,difference_old,plus_mw)
+         C_old = C
+         if(method == 'global_mw') C=min(12.8, C-0.07)
+         if(method == 'plus_mw') C=13.5
+         Start = .false.
+         call difference_mw_plus(file,mw_source,method,start,C,difference,plus_mw)
+
+         do while (abs(difference) > 0.1)
+            aux = C
+            C = C - difference*(C-C_old)/(difference-difference_old)
+            C_old = aux
+            difference_old = difference
+            call difference_mw_plus(file,mw_source,method,start,C,difference,plus_mw)
+         end do
+         print*, C, plus_mw
+      end select
 
       if(C>14.or.C<12)then
 
@@ -437,8 +459,12 @@ contains
          end do
          print*, C, plus_mw
       end if
+
+
+
    end subroutine get_C_or_m_plus
 
-end module routines
+end module pruebas
+
 
 
