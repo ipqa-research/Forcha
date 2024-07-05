@@ -2,9 +2,6 @@ module routines
    use constants
    use data_from_input, only: data_from_file, FluidData
 
-   implicit none
-   type(FluidData) :: oil
-
 contains
 
    subroutine Linear_Regression(x,y,a,b,r2)
@@ -49,11 +46,11 @@ contains
    end subroutine Linear_Regression
 
    subroutine Best_Linear_Regression(scn_nc,scn,scn_z,plus_z,a,b,r2,n_init,c_max_blr)
-      !! This subroutine calculates the best regression line for an oil.
+      !! This subroutine calculates the best regression line for an fluid.
       implicit none
 
-      integer, intent(in) :: scn_nc !! integer input variable set to the total number of single cuts being considered in the oil
-      integer, allocatable, intent(in) :: scn(:) !! set of singles cuts being considered in the oil
+      integer, intent(in) :: scn_nc !! integer input variable set to the total number of single cuts being considered in the fluid
+      integer, allocatable, intent(in) :: scn(:) !! set of singles cuts being considered in the fluid
       integer, intent(out) :: c_max_blr
       !! output CN at which plus_z is reached, as the summation of single z(i) from the best linear distribution (blr)
       real(pr), allocatable, intent(in) :: scn_z(:) !! set of corresponding mole fractions of scn cuts
@@ -134,11 +131,11 @@ contains
    end subroutine Best_Linear_Regression
 
    subroutine LimitLine(scn_nc,scn,plus_z,a_blr,b_blr,a_lim,b_lim,c_max_lim,half)
-      !! This subroutine obtains the limit line constants for an oil.
+      !! This subroutine obtains the limit line constants for an fluid.
       implicit none
 
-      integer, intent(in) :: scn_nc !! integer input variable set to the total number of single cuts being considered in the oil
-      integer, allocatable, intent(in) :: scn(:) !! set of singles cuts being considered in the oil
+      integer, intent(in) :: scn_nc !! integer input variable set to the total number of single cuts being considered in the fluid
+      integer, allocatable, intent(in) :: scn(:) !! set of singles cuts being considered in the fluid
       integer, intent(out) :: c_max_lim
       !! output CN at which plus_z is reached, as the summation of single z(i) from the limit distribution (blr)
       real(pr), intent(in) :: a_blr  !! input constant from the Best linear regression
@@ -176,11 +173,11 @@ contains
    end subroutine LimitLine
 
    subroutine Line_C60_max (scn_nc,scn,plus_z,a_blr,b_blr,half,a_60,b_60,c_max_60)
-      !! This subroutine obtains the Cmax60 line constants for an oil
+      !! This subroutine obtains the Cmax60 line constants for an fluid
 
       implicit none
-      integer, intent(in) :: scn_nc !! integer input variable set to the total number of single cuts being considered in the oil
-      integer, allocatable, intent(in) :: scn(:) !! set of singles cuts being considered in the oil
+      integer, intent(in) :: scn_nc !! integer input variable set to the total number of single cuts being considered in the fluid
+      integer, allocatable, intent(in) :: scn(:) !! set of singles cuts being considered in the fluid
       integer, intent(out) :: c_max_60 !!output CN at which Zp is reached, as the summation of single z(i) from the Cmax60 distribution.
       real(pr), intent(in) :: a_blr  !! input constant from the Best linear regression
       real(pr), intent(in) :: b_blr  !! input constant from the Best linear regression
@@ -224,10 +221,10 @@ contains
       !print*, a_60,b_60,c_max_60
    end subroutine Line_C60_max
 
-   subroutine select_method(file,mw_source,method,C,log_scn_z,plus_z,plus_mw)
+   subroutine select_method(fluid,mw_source,method,C,log_scn_z,plus_z,plus_mw)
 
       implicit none
-      character(len=*), intent(in) :: file !! file name
+      type(FluidData) :: fluid
       character(len=*), intent(in), optional :: method
       character(len=*), intent(in) :: mw_source
       real(pr), allocatable :: scn_mw(:) !! set to molecular weights calculated by \[M = 84-C(i-6)\]
@@ -242,22 +239,19 @@ contains
       real(pr) :: plus_moles
       real(pr) :: total_moles
       
+      allocate(scn_z(fluid%scn_nc))
+      allocate(scn_mw(fluid%scn_nc))
+      allocate(log_scn_z(fluid%scn_nc))
+      allocate(def_comp_moles(fluid%def_comp_nc))
+      allocate(scn_moles(fluid%scn_nc))
 
-      oil = data_from_file(file)
-
-      allocate(scn_z(oil%scn_nc))
-      allocate(scn_mw(oil%scn_nc))
-      allocate(log_scn_z(oil%scn_nc))
-      allocate(def_comp_moles(oil%def_comp_nc))
-      allocate(scn_moles(oil%scn_nc))
-
-      def_comp_moles = (oil%def_comp_w)/(oil%def_comp_mw)
+      def_comp_moles = (fluid%def_comp_w)/(fluid%def_comp_mw)
 
       select case (mw_source)
 
        case("experimental")
-         scn_moles = (oil%scn_w)/(oil%scn_mw)
-         plus_moles = (oil%plus_w)/(plus_mw)
+         scn_moles = (fluid%scn_w)/(fluid%scn_mw)
+         plus_moles = (fluid%plus_w)/(plus_mw)
          total_moles = sum(def_comp_moles)+sum(scn_moles)+(plus_moles)
          scn_z =  scn_moles / total_moles
          plus_z = plus_moles / total_moles
@@ -266,18 +260,18 @@ contains
        case("calculated")
          
          if (method=="global_mw")then
-            scn_mw = 84 + C*(oil%scn-6)
-            scn_z = oil%product_z_mw_scn / scn_mw
-            sum_def_comp_z_plus = sum(oil%scn_z) + (oil%plus_z)
+            scn_mw = 84 + C*(fluid%scn-6)
+            scn_z = fluid%product_z_mw_scn / scn_mw
+            sum_def_comp_z_plus = sum(fluid%scn_z) + (fluid%plus_z)
             plus_z = sum_def_comp_z_plus - sum(scn_z) ! new molar fraction for residual cut, based on C
-            plus_mw = oil%product_z_mw_plus / plus_z
+            plus_mw = fluid%product_z_mw_plus / plus_z
             log_scn_z = log(scn_z)
          end if
 
          if (method=="plus_mw")then
-            scn_mw = 84 + C*(oil%scn-6)
-            scn_moles = (oil%scn_w)/(scn_mw)
-            plus_moles = (oil%plus_w)/(plus_mw)
+            scn_mw = 84 + C*(fluid%scn-6)
+            scn_moles = (fluid%scn_w)/(scn_mw)
+            plus_moles = (fluid%plus_w)/(plus_mw)
             total_moles = sum(def_comp_moles)+sum(scn_moles)+(plus_moles)
             scn_z =  scn_moles / total_moles
             plus_z = plus_moles / total_moles
@@ -288,13 +282,13 @@ contains
 
    end subroutine select_method
 
-   subroutine difference_mw_plus(file,mw_source,method,start,C,difference,plus_mw)
+   subroutine difference_mw_plus(fluid,mw_source,method,start,C,difference,plus_mw)
 
       !! this subroutine ...
       implicit none
 
+      type(FluidData) :: fluid
       logical :: start
-      character(len=*), intent(in) :: file !! file name
       character(len=*), intent(in), optional :: method
       character(len=*), intent(in) :: mw_source
       integer :: c_max !! output CN at which plus_z is reached, as the summation of single z(i) from the best linear distribution (blr)
@@ -321,21 +315,22 @@ contains
       integer :: i
       real(pr), allocatable :: scn_mw(:) !! set to molecular weights calculated by \[M = 84-C(i-6)\]
       real(pr) :: sum_def_comp_z_plus !! compositions sum from (define component +1) to (plus component)
+      integer, dimension(300) :: carbon_number_plus
+      real(pr) :: denom
 
-      oil = data_from_file(file)
-      allocate(scn_z(oil%scn_nc))
-      allocate(scn_mw(oil%scn_nc))
-      allocate(log_scn_z(oil%scn_nc))
-      allocate(x_blr(oil%scn_nc))
-      allocate(y_blr(oil%scn_nc))
+      allocate(scn_z(fluid%scn_nc))
+      allocate(scn_mw(fluid%scn_nc))
+      allocate(log_scn_z(fluid%scn_nc))
+      allocate(x_blr(fluid%scn_nc))
+      allocate(y_blr(fluid%scn_nc))
 
-      1     i_0 = oil%scn(oil%scn_nc)
+      1     i_0 = fluid%scn(fluid%scn_nc)
 
-      call select_method(file,mw_source,method,C,log_scn_z,plus_z,plus_mw) ! select case
-      call Best_Linear_Regression(oil%scn_nc,oil%scn,log_scn_z,plus_z,a_blr,b_blr,r2, &
+      call select_method(fluid,mw_source,method,C,log_scn_z,plus_z,plus_mw) ! select case
+      call Best_Linear_Regression(fluid%scn_nc,fluid%scn,log_scn_z,plus_z,a_blr,b_blr,r2, &
          n_init,c_max_blr)
-      call LimitLine(oil%scn_nc,oil%scn,plus_z,a_blr,b_blr,a_lim,b_lim,c_max_lim,half)
-      call Line_C60_max (oil%scn_nc,oil%scn,plus_z,a_blr,b_blr,half,a_60,b_60,c_max_60) ! add line by oscar.
+      call LimitLine(fluid%scn_nc,fluid%scn,plus_z,a_blr,b_blr,a_lim,b_lim,c_max_lim,half)
+      call Line_C60_max (fluid%scn_nc,fluid%scn,plus_z,a_blr,b_blr,half,a_60,b_60,c_max_60) ! add line by oscar.
 
       if(a_blr < a_lim)then ! added by oscar 05/12/2023.se elimina por que se agregan las restriccones para C>12 y C<12.
          a = a_lim
@@ -357,6 +352,7 @@ contains
          plus_z_i(i) = exp(a*(i+i_0)+b)
          sum_z = sum_z + plus_z_i(i)
          product_z_mw_plus_i(i) = plus_z_i(i)*(84+C*(i+i_0-6))
+         carbon_number_plus(i) = i+i_0
       end do
 
       if (i==300.and.sum_z<plus_z)then
@@ -365,21 +361,25 @@ contains
          go to 1
       end if
 
+      c_max = i+i_0
       plus_z_i(i) = plus_z_i(i) - (sum_z-plus_z) !   Adjustment to Zp (z20+)
       product_z_mw_plus_i(i) = plus_z_i(i)*(84+C*(i+i_0-6))
+
+      if (mw_source=="experimental" .and. C>12 .and. C<14 )then !! mayor igual a 12 o menor igual 14.
+         denom = sum((plus_z_i(1:i))*((carbon_number_plus(1:i)-6))) !! denominator of equation to obtain C value directly
+         C = (plus_z*(plus_mw-84))/denom
+      endif
+
       plus_mw_cal = sum(product_z_mw_plus_i(1:i))/plus_z
       difference = plus_mw_cal-plus_mw
-      c_max = i+i_0
-      !print*, a, b
-      !print*,  plus_mw, plus_mw_cal
 
    end subroutine difference_mw_plus
 
-   subroutine get_C_or_m_plus(file,mw_source,method,start,C)
+   subroutine get_c_or_m_plus(fluid,mw_source,method)
       !! This subroutine...
       implicit none
+      type(FluidData) :: fluid
       logical :: start
-      character(len=*), intent(in) :: file !! file name
       character(len=*), intent(in), optional :: method
       character(len=*), intent(in) :: mw_source
       integer :: c_max !! output CN at which plus_z is reached, as the summation of single z(i) from the best linear distribution (blr)
@@ -392,28 +392,40 @@ contains
       real(pr) :: C_old
       real(pr) :: aux
 
-      if(method == 'global_mw') C=13
-      if(method == 'plus_mw') C=14
 
-      Start = .true.
-      oil = data_from_file(file)
-      plus_mw = oil%plus_mw
+      select case (mw_source)
 
-      call difference_mw_plus(file,mw_source,method,start,C,difference_old,plus_mw)
-      C_old = C
-      if(method == 'global_mw') C=min(12.8, C-0.07)
-      if(method == 'plus_mw') C=13.5
-      Start = .false.
-      call difference_mw_plus(file,mw_source,method,start,C,difference,plus_mw)
+       case("experimental")
+         C = 13.5
+         Start = .true.
+         plus_mw = fluid%plus_mw
+         call difference_mw_plus(fluid,mw_source,method,start,C,difference,plus_mw)
+         print*, C, plus_mw
 
-      do while (abs(difference) > 0.1)
-         aux = C
-         C = C - difference*(C-C_old)/(difference-difference_old)
-         C_old = aux
-         difference_old = difference
-         call difference_mw_plus(file,mw_source,method,start,C,difference,plus_mw)
-      end do
-      print*, C, plus_mw
+       case("calculated")
+
+         if(method == 'global_mw') C=13
+         if(method == 'plus_mw') C=14
+
+         Start = .true.
+         plus_mw = fluid%plus_mw
+
+         call difference_mw_plus(fluid,mw_source,method,start,C,difference_old,plus_mw)
+         C_old = C
+         if(method == 'global_mw') C=min(12.8, C-0.07)
+         if(method == 'plus_mw') C=13.5
+         Start = .false.
+         call difference_mw_plus(fluid,mw_source,method,start,C,difference,plus_mw)
+
+         do while (abs(difference) > 0.1)
+            aux = C
+            C = C - difference*(C-C_old)/(difference-difference_old)
+            C_old = aux
+            difference_old = difference
+            call difference_mw_plus(fluid,mw_source,method,start,C,difference,plus_mw)
+         end do
+         print*, C, plus_mw
+      end select
 
       if(C>14.or.C<12)then
 
@@ -421,23 +433,23 @@ contains
          if(C<12) C=12
 
          Start = .true.
-         plus_mw = oil%plus_mw
-         call difference_mw_plus(file,mw_source,method,start,C,difference_old,plus_mw)
+         plus_mw = fluid%plus_mw
+         call difference_mw_plus(fluid,mw_source,method,start,C,difference_old,plus_mw)
          plus_mw_old = plus_mw
          plus_mw = 0.9*plus_mw
          Start = .false.
-         call difference_mw_plus(file,mw_source,method,start,C,difference,plus_mw)
+         call difference_mw_plus(fluid,mw_source,method,start,C,difference,plus_mw)
 
          do while (abs(difference)>0.00001)
             aux = plus_mw
             plus_mw = plus_mw - difference*(plus_mw-plus_mw_old)/(difference-difference_old)
             plus_mw_old = aux
             difference_old = difference
-            call difference_mw_plus(file,mw_source,method,start,C,difference,plus_mw)
+            call difference_mw_plus(fluid,mw_source,method,start,C,difference,plus_mw)
          end do
          print*, C, plus_mw
       end if
-   end subroutine get_C_or_m_plus
+   end subroutine get_c_or_m_plus
 
 end module routines
 
