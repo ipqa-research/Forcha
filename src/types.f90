@@ -5,6 +5,7 @@ module dtypes
    type :: FluidData
       integer :: def_comp_nc !! number of defined components being considered in the oil
       integer :: scn_nc !! number of single cuts being considered in the oil
+      character(len=:), allocatable :: filename 
       integer, allocatable :: scn (:) !! set of singles cuts being considered in the oil 
       character(len=15), allocatable :: def_components (:) !! set of defined components being considered in the oil  
       character(len=15) :: scn_plus !! name of residual fraction 
@@ -22,6 +23,7 @@ module dtypes
       real(pr), allocatable :: def_comp_w(:) !! mass fractions of the defined compounds
       real(pr), allocatable :: scn_w(:) !! !! mass fractions of the scn-s compounds
       real(pr) :: plus_w !! mass fractions of the plus fraction
+      
 
 
 
