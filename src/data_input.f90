@@ -142,6 +142,8 @@ contains
       !! This funtion allows to obtain experimental data from data imput
       character(len=*), intent(in) :: file !! file name
 
+      data%filename = file
+
       call read_setup(file, data%def_comp_nc, data%scn_nc)
       call read_components(file, data%def_components, data%scn, &
          data%scn_plus)
@@ -151,9 +153,7 @@ contains
       call mass_fractions(file, data%w, data%product_z_mw_def_comp, &
          data%product_z_mw_scn, data%sum_z_mw_i, data%product_z_mw_plus, &
          data%def_comp_w, data%scn_w, data%plus_w)
-
-
-         
+ 
          
    end function data_from_file
 
