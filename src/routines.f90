@@ -345,6 +345,7 @@ contains
          end if
       end if
 
+
       sum_z = 0.0_pr
       i = 0
       do while (sum_z<plus_z.and.i<300)

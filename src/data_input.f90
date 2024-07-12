@@ -128,6 +128,15 @@ contains
       plus_w = w(def_comp_nc+scn_nc+1)
    end subroutine mass_fractions
 
+   subroutine read_density()
+      !! Reads the density of each component from the input file and calculated molar volume since C6 fraction.
+
+
+
+
+   end subroutine read_density
+
+
 
    type(FluidData) function data_from_file(file) result(data)
       !! This funtion allows to obtain experimental data from data imput
