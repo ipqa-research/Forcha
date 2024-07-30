@@ -128,22 +128,31 @@ contains
       plus_w = w(def_comp_nc+scn_nc+1)
    end subroutine mass_fractions
 
-   subroutine read_density()
+   subroutine read_density(file,scn_density,plus_density)
       !! Reads the density of each component from the input file and calculated molar volume since C6 fraction.
-
-
-
+      character(len=*), intent(in) :: file !! file name
+      real(pr), allocatable, intent(out) :: scn_density(:) !! set of corresponding densities of scn cuts
+      real(pr), intent(out):: plus_density !! density of residual fraction from input file
+      integer :: def_comp_nc !! number of defined components being considered in the oil
+      integer :: scn_nc !! number of single cuts being considered in the oil
+      integer :: funit
+      namelist /nml_density/ scn_density, plus_density
+      
+      call read_setup(file, def_comp_nc, scn_nc)
+      allocate(scn_density(scn_nc))
+      
+      open(newunit=funit, file=file)
+      read(funit, nml=nml_density)
+      close(funit)
 
    end subroutine read_density
-
-
 
    type(FluidData) function data_from_file(file) result(data)
       !! This funtion allows to obtain experimental data from data imput
       character(len=*), intent(in) :: file !! file name
-
+      
       data%filename = file
-
+      
       call read_setup(file, data%def_comp_nc, data%scn_nc)
       call read_components(file, data%def_components, data%scn, &
          data%scn_plus)
@@ -153,9 +162,10 @@ contains
       call mass_fractions(file, data%w, data%product_z_mw_def_comp, &
          data%product_z_mw_scn, data%sum_z_mw_i, data%product_z_mw_plus, &
          data%def_comp_w, data%scn_w, data%plus_w)
- 
-         
+      call read_density(file, data%scn_density, data%plus_density)
+  
    end function data_from_file
+   
 
 end module data_from_input
 
