@@ -23,15 +23,37 @@ module dtypes
       real(pr), allocatable :: def_comp_w(:) !! mass fractions of the defined compounds
       real(pr), allocatable :: scn_w(:) !! !! mass fractions of the scn-s compounds
       real(pr) :: plus_w !! mass fractions of the plus fraction
-      
-
-
-
+      real(pr), allocatable :: scn_density(:) !! set of corresponding densities of scn cuts
+      real(pr) :: plus_density !! experimental density of the plus fraction
    end type FluidData
-
 
    type :: FluidDataOut
    ! incluir aqui las variables que quiero que salgan como salida
+      real(pr), allocatable :: scn_z(:) !!  set of corresponding mole fractions of scn cuts calculated
+      real(pr), allocatable :: log_scn_z(:) !!  set of corresponding mole fractions of scn cuts calculated
+      real(pr) :: plus_mw !!  molecular weight of residual fraction
+      real(pr) :: plus_z !! composition of residual fraction
+      real(pr) :: C !! C constants which is used in equation \[M = 84-characterization%C(i-6)\]
+      real(pr), allocatable :: scn_mw(:) !! set of corresponding molecular weights of scn cuts
+      real(pr) :: a_blr !! A constant for best linear regression line.
+      real(pr) :: b_blr !! B constant for best linear regression line.
+      real(pr) :: a_60 !! A constant for Cmax60 line.
+      real(pr) :: b_60 !! B constant for Cmax60 line.
+      real(pr) :: a_lim !! A constant for limit feasible line.
+      real(pr) :: b_lim !! B constant for limit feasible line.
+      real(pr) :: a !! output real variable. Slope of the best feasible regression line.
+      real(pr) :: b !! output real variable. Intercept of the best feasible regression line.
+      real(pr) :: r2 !! output real variable. Square correlation coefficient.
+      integer :: n_init ! minimum carbon number obtained from the best linear regression
+      integer :: c_max_blr, c_max_lim, c_max_60
+      integer :: nc_plus !! number of elements in the distribution of C20+
+      integer :: c_max  !! output CN at which plus_z is reached, as the summation of single z(i) from the best linear distribution (blr)
+      integer, allocatable :: carbon_number_plus(:)
+      real(pr), allocatable :: plus_z_i(:)
+      real(pr), allocatable  :: product_z_mw_plus_i(:)
+      real(pr) :: a_d !! ad constant which is used in equation \[rho_i = ad*exp(-i/10) +bd\] for density.
+      real(pr) :: b_d !! bd constant which is used in equation \[rho_i = ad*exp(-i/10) +bd\] for density.
+      real(pr) :: volume_6plus_cal
    end type FluidDataOut
 
 end module dtypes
