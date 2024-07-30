@@ -38,5 +38,10 @@
     plus_mw = 470.7 
         ! molecular weight of residual fraction  
 /
-
+&nml_density   
+    scn_density = 0.685 0.749 0.768 0.793 0.808 0.815 0.836 0.85 0.861 0.873 0.882 0.873 0.875 0.885
+        ! density of single carbon numbers
+    plus_density = 0.936 
+        ! density of residual fraction
+/
 
