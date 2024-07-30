@@ -1,0 +1,596 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Characterization of reservoir fluids">
+    <meta name="author" content="Oscar Therán" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>data_from_file &ndash; Forcha</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">Forcha </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/namelists.html">Namelists</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>data_from_file
+      <small>Function</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.7% of total for procedures.">10 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/data_input.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/data_input.f90.html'>data_input.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/data_from_input.html'>data_from_input</a></li>
+            <li class="breadcrumb-item active" aria-current="page">data_from_file</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(function () {
+    $('[data-bs-toggle="tooltip"]').tooltip()
+    })
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>public  function data_from_file(file) result(data)  
+</h2>
+    
+
+    <p>This funtion allows to obtain experimental data from data imput</p>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-file~7"></span>
+              character(len=*),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>file</strong></td>
+            <td>
+                <p>file name</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <h3>Return Value
+        <small>
+          <span class="anchor" id="variable-data"></span>
+          type(<a href='../type/fluiddata.html'>FluidData</a>)
+        </small>
+      </h3>
+      
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~data_from_file~~CallsGraph Pages: 1 -->
+<svg id="procdata_from_fileCallsGraph" width="503pt" height="208pt"
+ viewBox="0.00 0.00 503.00 208.16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~data_from_file~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 204.16)">
+<title>proc~~data_from_file~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-204.16 499,-204.16 499,4 -4,4"/>
+<!-- proc~data_from_file -->
+<g id="proc~~data_from_file~~CallsGraph_node1" class="node">
+<title>proc~data_from_file</title>
+<polygon fill="none" stroke="black" points="88,-99.16 0,-99.16 0,-75.16 88,-75.16 88,-99.16"/>
+<text text-anchor="middle" x="44" y="-84.76" font-family="Helvetica,sans-Serif" font-size="10.50">data_from_file</text>
+</g>
+<!-- proc~mass_fractions -->
+<g id="proc~~data_from_file~~CallsGraph_node2" class="node">
+<title>proc~mass_fractions</title>
+<g id="a_proc~~data_from_file~~CallsGraph_node2"><a xlink:href="../proc/mass_fractions.html" xlink:title="mass_fractions">
+<polygon fill="#d9534f" stroke="#d9534f" points="216,-158.16 124,-158.16 124,-134.16 216,-134.16 216,-158.16"/>
+<text text-anchor="middle" x="170" y="-143.76" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">mass_fractions</text>
+</a>
+</g>
+</g>
+<!-- proc~data_from_file&#45;&gt;proc~mass_fractions -->
+<g id="proc~~data_from_file~~CallsGraph_edge1" class="edge">
+<title>proc~data_from_file&#45;&gt;proc~mass_fractions</title>
+<path fill="none" stroke="#000000" d="M70.39,-99.24C88.87,-108.03 114.09,-120.03 134.41,-129.7"/>
+<polygon fill="#000000" stroke="#000000" points="133.11,-132.96 143.64,-134.09 136.12,-126.64 133.11,-132.96"/>
+</g>
+<!-- proc~read_components -->
+<g id="proc~~data_from_file~~CallsGraph_node3" class="node">
+<title>proc~read_components</title>
+<g id="a_proc~~data_from_file~~CallsGraph_node3"><a xlink:href="../proc/read_components.html" xlink:title="read_components">
+<polygon fill="#d9534f" stroke="#d9534f" points="374,-78.16 266,-78.16 266,-54.16 374,-54.16 374,-78.16"/>
+<text text-anchor="middle" x="320" y="-63.76" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">read_components</text>
+</a>
+</g>
+</g>
+<!-- proc~data_from_file&#45;&gt;proc~read_components -->
+<g id="proc~~data_from_file~~CallsGraph_edge2" class="edge">
+<title>proc~data_from_file&#45;&gt;proc~read_components</title>
+<path fill="none" stroke="#000000" d="M88.11,-83.85C133.18,-80.4 204.38,-74.94 255.8,-71"/>
+<polygon fill="#000000" stroke="#000000" points="256.1,-74.49 265.81,-70.24 255.57,-67.51 256.1,-74.49"/>
+</g>
+<!-- proc~read_composition -->
+<g id="proc~~data_from_file~~CallsGraph_node4" class="node">
+<title>proc~read_composition</title>
+<g id="a_proc~~data_from_file~~CallsGraph_node4"><a xlink:href="../proc/read_composition.html" xlink:title="read_composition">
+<polygon fill="#d9534f" stroke="#d9534f" points="373.5,-200.16 266.5,-200.16 266.5,-176.16 373.5,-176.16 373.5,-200.16"/>
+<text text-anchor="middle" x="320" y="-185.76" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">read_composition</text>
+</a>
+</g>
+</g>
+<!-- proc~data_from_file&#45;&gt;proc~read_composition -->
+<g id="proc~~data_from_file~~CallsGraph_edge3" class="edge">
+<title>proc~data_from_file&#45;&gt;proc~read_composition</title>
+<path fill="none" stroke="#000000" d="M52.76,-99.18C65.28,-117.43 91.83,-151.64 124,-167.16 165.05,-186.96 216.48,-191.8 256.22,-191.9"/>
+<polygon fill="#000000" stroke="#000000" points="256.34,-195.4 266.31,-191.83 256.29,-188.4 256.34,-195.4"/>
+</g>
+<!-- proc~read_density -->
+<g id="proc~~data_from_file~~CallsGraph_node5" class="node">
+<title>proc~read_density</title>
+<g id="a_proc~~data_from_file~~CallsGraph_node5"><a xlink:href="../proc/read_density.html" xlink:title="read_density">
+<polygon fill="#d9534f" stroke="#d9534f" points="210,-40.16 130,-40.16 130,-16.16 210,-16.16 210,-40.16"/>
+<text text-anchor="middle" x="170" y="-25.76" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">read_density</text>
+</a>
+</g>
+</g>
+<!-- proc~data_from_file&#45;&gt;proc~read_density -->
+<g id="proc~~data_from_file~~CallsGraph_edge4" class="edge">
+<title>proc~data_from_file&#45;&gt;proc~read_density</title>
+<path fill="none" stroke="#000000" d="M70.39,-75.08C88.87,-66.29 114.09,-54.28 134.41,-44.62"/>
+<polygon fill="#000000" stroke="#000000" points="136.12,-47.68 143.64,-40.22 133.11,-41.36 136.12,-47.68"/>
+</g>
+<!-- proc~read_molecular_weight -->
+<g id="proc~~data_from_file~~CallsGraph_node6" class="node">
+<title>proc~read_molecular_weight</title>
+<g id="a_proc~~data_from_file~~CallsGraph_node6"><a xlink:href="../proc/read_molecular_weight.html" xlink:title="read_molecular_weight">
+<polygon fill="#d9534f" stroke="#d9534f" points="388,-120.16 252,-120.16 252,-96.16 388,-96.16 388,-120.16"/>
+<text text-anchor="middle" x="320" y="-105.76" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">read_molecular_weight</text>
+</a>
+</g>
+</g>
+<!-- proc~data_from_file&#45;&gt;proc~read_molecular_weight -->
+<g id="proc~~data_from_file~~CallsGraph_edge5" class="edge">
+<title>proc~data_from_file&#45;&gt;proc~read_molecular_weight</title>
+<path fill="none" stroke="#000000" d="M88.11,-90.46C129.21,-93.61 192.03,-98.43 241.78,-102.24"/>
+<polygon fill="#000000" stroke="#000000" points="241.62,-105.74 251.86,-103.01 242.16,-98.76 241.62,-105.74"/>
+</g>
+<!-- proc~read_setup -->
+<g id="proc~~data_from_file~~CallsGraph_node7" class="node">
+<title>proc~read_setup</title>
+<g id="a_proc~~data_from_file~~CallsGraph_node7"><a xlink:href="../proc/read_setup.html" xlink:title="read_setup">
+<polygon fill="#d9534f" stroke="#d9534f" points="495,-99.16 424,-99.16 424,-75.16 495,-75.16 495,-99.16"/>
+<text text-anchor="middle" x="459.5" y="-84.76" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">read_setup</text>
+</a>
+</g>
+</g>
+<!-- proc~data_from_file&#45;&gt;proc~read_setup -->
+<g id="proc~~data_from_file~~CallsGraph_edge6" class="edge">
+<title>proc~data_from_file&#45;&gt;proc~read_setup</title>
+<path fill="none" stroke="#000000" d="M52.37,-75.02C64.55,-56.28 90.86,-21.01 124,-7.16 166.1,10.44 363.11,-10.14 388,-21.16 410.64,-31.18 430.61,-51.6 443.47,-67.09"/>
+<polygon fill="#000000" stroke="#000000" points="440.88,-69.45 449.85,-75.09 446.35,-65.09 440.88,-69.45"/>
+</g>
+<!-- proc~mass_fractions&#45;&gt;proc~read_composition -->
+<g id="proc~~data_from_file~~CallsGraph_edge7" class="edge">
+<title>proc~mass_fractions&#45;&gt;proc~read_composition</title>
+<path fill="none" stroke="#000000" d="M213.41,-158.19C229.98,-162.9 249.14,-168.33 266.56,-173.28"/>
+<polygon fill="#000000" stroke="#000000" points="266.01,-176.76 276.58,-176.12 267.92,-170.02 266.01,-176.76"/>
+</g>
+<!-- proc~mass_fractions&#45;&gt;proc~read_molecular_weight -->
+<g id="proc~~data_from_file~~CallsGraph_edge8" class="edge">
+<title>proc~mass_fractions&#45;&gt;proc~read_molecular_weight</title>
+<path fill="none" stroke="#000000" d="M216.21,-134.55C230.71,-130.83 246.97,-126.65 262.19,-122.74"/>
+<polygon fill="#000000" stroke="#000000" points="263.2,-126.1 272.02,-120.22 261.46,-119.32 263.2,-126.1"/>
+</g>
+<!-- proc~mass_fractions&#45;&gt;proc~read_setup -->
+<g id="proc~~data_from_file~~CallsGraph_edge9" class="edge">
+<title>proc~mass_fractions&#45;&gt;proc~read_setup</title>
+<path fill="none" stroke="#000000" d="M216.19,-148.53C260.9,-149.51 330.74,-147.36 388,-129.16 404.66,-123.86 421.54,-114 434.61,-105.16"/>
+<polygon fill="#000000" stroke="#000000" points="436.82,-107.88 443,-99.27 432.8,-102.15 436.82,-107.88"/>
+</g>
+<!-- proc~read_components&#45;&gt;proc~read_setup -->
+<g id="proc~~data_from_file~~CallsGraph_edge10" class="edge">
+<title>proc~read_components&#45;&gt;proc~read_setup</title>
+<path fill="none" stroke="#000000" d="M374.16,-74.28C387.15,-76.26 400.92,-78.37 413.49,-80.28"/>
+<polygon fill="#000000" stroke="#000000" points="413.3,-83.8 423.72,-81.85 414.36,-76.88 413.3,-83.8"/>
+</g>
+<!-- proc~read_composition&#45;&gt;proc~read_setup -->
+<g id="proc~~data_from_file~~CallsGraph_edge11" class="edge">
+<title>proc~read_composition&#45;&gt;proc~read_setup</title>
+<path fill="none" stroke="#000000" d="M360.73,-176.1C370.08,-172.37 379.72,-167.74 388,-162.16 410.21,-147.19 430.58,-124.04 443.65,-107.42"/>
+<polygon fill="#000000" stroke="#000000" points="446.49,-109.47 449.79,-99.4 440.93,-105.21 446.49,-109.47"/>
+</g>
+<!-- proc~read_density&#45;&gt;proc~read_setup -->
+<g id="proc~~data_from_file~~CallsGraph_edge12" class="edge">
+<title>proc~read_density&#45;&gt;proc~read_setup</title>
+<path fill="none" stroke="#000000" d="M210.04,-25.95C254.28,-24.64 328.04,-26.1 388,-45.16 404.66,-50.45 421.54,-60.32 434.61,-69.16"/>
+<polygon fill="#000000" stroke="#000000" points="432.8,-72.17 443,-75.05 436.82,-66.44 432.8,-72.17"/>
+</g>
+<!-- proc~read_molecular_weight&#45;&gt;proc~read_setup -->
+<g id="proc~~data_from_file~~CallsGraph_edge13" class="edge">
+<title>proc~read_molecular_weight&#45;&gt;proc~read_setup</title>
+<path fill="none" stroke="#000000" d="M388.14,-97.9C396.86,-96.57 405.62,-95.23 413.85,-93.98"/>
+<polygon fill="#000000" stroke="#000000" points="414.6,-97.4 423.95,-92.44 413.54,-90.49 414.6,-97.4"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~data_from_file~~CalledByGraph Pages: 1 -->
+<svg id="procdata_from_fileCalledByGraph" width="211pt" height="32pt"
+ viewBox="0.00 0.00 211.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~data_from_file~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>proc~~data_from_file~~CalledByGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 207,-28 207,4 -4,4"/>
+<!-- proc~data_from_file -->
+<g id="proc~~data_from_file~~CalledByGraph_node1" class="node">
+<title>proc~data_from_file</title>
+<polygon fill="none" stroke="black" points="203,-24 115,-24 115,0 203,0 203,-24"/>
+<text text-anchor="middle" x="159" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">data_from_file</text>
+</g>
+<!-- proc~characterize -->
+<g id="proc~~data_from_file~~CalledByGraph_node2" class="node">
+<title>proc~characterize</title>
+<g id="a_proc~~data_from_file~~CalledByGraph_node2"><a xlink:href="../proc/characterize.html" xlink:title="characterize">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="79,-24 0,-24 0,0 79,0 79,-24"/>
+<text text-anchor="middle" x="39.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">characterize</text>
+</a>
+</g>
+</g>
+<!-- proc~characterize&#45;&gt;proc~data_from_file -->
+<g id="proc~~data_from_file~~CalledByGraph_edge1" class="edge">
+<title>proc~characterize&#45;&gt;proc~data_from_file</title>
+<path fill="none" stroke="#000000" d="M79.3,-12C87.38,-12 96.03,-12 104.53,-12"/>
+<polygon fill="#000000" stroke="#000000" points="104.78,-15.5 114.78,-12 104.78,-8.5 104.78,-15.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              Forcha
+ was developed by Oscar Therán<br>              &copy; 2024 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2024-07-30 17:21              </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
+  </body>
+</html>
