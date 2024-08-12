@@ -5,13 +5,15 @@ module data_from_input
    implicit none
 contains
 
-   subroutine read_setup(file, def_comp_nc, scn_nc)
+   subroutine read_setup(file, def_comp_nc, scn_nc, scn_nc_ps, numbers_ps)
       !! Reads the setup data from input file
       character(len=*), intent(in) :: file !! file name
       integer, intent(out):: def_comp_nc !! number of defined components being considered in the oil
       integer, intent(out):: scn_nc !! number of single cuts being considered in the oil
+      integer, intent(out):: scn_nc_ps !! CN from which all SCN fractions will be lumped into the specified number of pseudos
+      integer, intent(out):: numbers_ps !! number of pseudos in which the scn fractions grouped
       integer :: funit
-      namelist /nml_setup/ def_comp_nc, scn_nc
+      namelist /nml_setup/ def_comp_nc, scn_nc, scn_nc_ps, numbers_ps
 
       open(newunit=funit, file=file)
       read(funit, nml=nml_setup)
@@ -26,10 +28,12 @@ contains
       character(len=15), intent(out) :: scn_plus !! name of residual fraction
       integer :: def_comp_nc !! number of defined components being considered in the oil
       integer :: scn_nc !! number of single cuts being considered in the oil
+      integer :: scn_nc_ps !! CN from which all SCN fractions will be lumped into the specified number of pseudos
+      integer :: numbers_ps !! number of pseudos in which the scn fractions grouped
       integer :: funit
       namelist /nml_components/ def_components, scn, scn_plus
 
-      call read_setup(file, def_comp_nc, scn_nc)
+      call read_setup(file, def_comp_nc, scn_nc, scn_nc_ps, numbers_ps)
       allocate(def_components(def_comp_nc))
       allocate(scn(scn_nc))
 
@@ -46,10 +50,12 @@ contains
       real(pr), intent(out):: plus_z !! composition of residual fraction from input file
       integer :: def_comp_nc !! number of defined components being considered in the oil
       integer :: scn_nc !! number of single cuts being considered in the oil
+      integer :: scn_nc_ps !! CN from which all SCN fractions will be lumped into the specified number of pseudos
+      integer :: numbers_ps !! number of pseudos in which the scn fractions grouped
       integer :: funit
       namelist /nml_composition/ def_comp_z, scn_z, plus_z
 
-      call read_setup(file, def_comp_nc, scn_nc)
+      call read_setup(file, def_comp_nc, scn_nc, scn_nc_ps, numbers_ps)
       allocate(def_comp_z(def_comp_nc))
       allocate(scn_z(scn_nc))
 
@@ -66,10 +72,12 @@ contains
       real(pr), intent(out) :: plus_mw !!  molecular weight of residual fraction
       integer :: def_comp_nc !! number of defined components being considered in the oil
       integer :: scn_nc !! number of single cuts being considered in the oil
+      integer :: scn_nc_ps !! CN from which all SCN fractions will be lumped into the specified number of pseudos
+      integer :: numbers_ps !! number of pseudos in which the scn fractions grouped
       integer :: funit
       namelist /nml_molecular_weight/ def_comp_mw, scn_mw, plus_mw
 
-      call read_setup(file, def_comp_nc, scn_nc)
+      call read_setup(file, def_comp_nc, scn_nc, scn_nc_ps, numbers_ps)
       allocate(def_comp_mw(def_comp_nc))
       allocate(scn_mw(scn_nc))
 
@@ -90,6 +98,8 @@ contains
       real(pr), intent(out) :: product_z_mw_plus !! product between composition and molecular weight of residual fraction
       integer :: def_comp_nc !! number of defined components being considered in the oil
       integer :: scn_nc !! number of single cuts being considered in the oil
+      integer :: scn_nc_ps !! CN from which all SCN fractions will be lumped into the specified number of pseudos
+      integer :: numbers_ps !! number of pseudos in which the scn fractions grouped
       integer :: funit
       real(pr), allocatable :: def_comp_z(:) !! set of corresponding mole fractions of defined components
       real(pr), allocatable :: scn_z(:) !! set of corresponding mole fractions of scn cuts
@@ -102,7 +112,7 @@ contains
       real(pr), allocatable, intent(out) :: scn_w(:)
       real(pr), intent(out) :: plus_w
 
-      call read_setup(file, def_comp_nc, scn_nc)
+      call read_setup(file, def_comp_nc, scn_nc, scn_nc_ps, numbers_ps)
       allocate(product_z_mw_def_comp(def_comp_nc))
       allocate(product_z_mw_scn(scn_nc))
       allocate(def_comp_z(def_comp_nc))
@@ -135,10 +145,12 @@ contains
       real(pr), intent(out):: plus_density !! density of residual fraction from input file
       integer :: def_comp_nc !! number of defined components being considered in the oil
       integer :: scn_nc !! number of single cuts being considered in the oil
+      integer :: scn_nc_ps !! CN from which all SCN fractions will be lumped into the specified number of pseudos
+      integer :: numbers_ps !! number of pseudos in which the scn fractions grouped
       integer :: funit
       namelist /nml_density/ scn_density, plus_density
       
-      call read_setup(file, def_comp_nc, scn_nc)
+      call read_setup(file, def_comp_nc, scn_nc, scn_nc_ps, numbers_ps)
       allocate(scn_density(scn_nc))
       
       open(newunit=funit, file=file)
@@ -153,7 +165,7 @@ contains
       
       data%filename = file
       
-      call read_setup(file, data%def_comp_nc, data%scn_nc)
+      call read_setup(file, data%def_comp_nc, data%scn_nc, data%scn_nc_ps, data%numbers_ps)
       call read_components(file, data%def_components, data%scn, &
          data%scn_plus)
       call read_composition(file, data%def_comp_z, data%scn_z, data%plus_z)
