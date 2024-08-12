@@ -1,6 +1,6 @@
 ! Namelist based input file
 ! ==============================================================================
-!  - Oil 2 Pedersen
+!  - YPF1 YPF
 !  - Composition: molar
 !  - Molecular Weights: g/mol
 !  - Density: g/cm3
@@ -21,20 +21,25 @@
         ! name of plus fraction
 /
 &nml_composition
-    def_comp_z = 0 0 0 0.0001 0.0047 0.0058 0.0151 0.0168 0.0196
-            ! compositions of defined components 
-    scn_z = 0.0437 0.09	0.1071 0.0732 0.0623 0.055 0.0514 0.0443 0.048 0.0381 0.0282 0.0333 0.0234 0.0266  
+    def_comp_z = 0.0171 0.00001 0.03148 0.02775 0.05858 0.0113 0.04194 0.01545 0.02587 
+        ! compositions of defined components 
+    scn_z = 0.02186 0.05758 0.06816 0.05089 0.04279 0.03571 0.03401 0.03531 0.03247 0.03547 0.02924 0.02762 0.02871 0.02777
         ! compositions of single carbon numbers
-    plus_z = 0.2133   
+    plus_z = 0.24292  
         ! composition of residual fraction 
 /
 &nml_molecular_weight
-    def_comp_mw = 28.01 44.01 16 30.1 44.1 58.1 58.1 72.1 72.1   
+    def_comp_mw = 28.01 44.01 16.04 30.07 44.09 58.12 58.12 72.15 72.15   
         ! molecular weights of defined components 
-    scn_mw = 86.2 92.3 105.9 120.3 133 148	163	177	190	204	217	235	248	260
+    scn_mw = 84 96 107 121 134 147 161 175 190 206 222 237 251 263
         ! molecular weights of single carbon numbers
-    plus_mw = 442.1
+    plus_mw = 661  
         ! molecular weight of residual fraction  
 /
-
+&nml_density   
+    scn_density = 0.685 0.749 0.768 0.793 0.808 0.815 0.836 0.85 0.861 0.873 0.882 0.873 0.875 0.885
+        ! density of single carbon numbers
+    plus_density = 0.936 
+        ! density of residual fraction
+/
 
