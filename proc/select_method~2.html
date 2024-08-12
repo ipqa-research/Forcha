@@ -77,20 +77,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.9% of total for procedures.">45 statements</a>
+                 title=" 3.3% of total for procedures.">50 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/routines.f90"> Source File</a>
+              <a href="../src/prueba.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/routines.f90.html'>routines.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/routines.html'>routines</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/prueba.f90.html'>prueba.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/pruebas.html'>pruebas</a></li>
             <li class="breadcrumb-item active" aria-current="page">select_method</li>
           </ol>
         </nav>
@@ -120,6 +120,8 @@
             <a class="list-group-item" href="../proc/select_method~2.html#variable-def_comp_moles~2">def_comp_moles</a>
             <a class="list-group-item" href="../proc/select_method~2.html#variable-plus_moles~2">plus_moles</a>
             <a class="list-group-item" href="../proc/select_method~2.html#variable-scn_moles~2">scn_moles</a>
+            <a class="list-group-item" href="../proc/select_method~2.html#variable-scn_mw~5">scn_mw</a>
+            <a class="list-group-item" href="../proc/select_method~2.html#variable-scn_z~7">scn_z</a>
             <a class="list-group-item" href="../proc/select_method~2.html#variable-sum_def_comp_z_plus~3">sum_def_comp_z_plus</a>
             <a class="list-group-item" href="../proc/select_method~2.html#variable-total_moles~2">total_moles</a>
         </div>
@@ -151,15 +153,10 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine select_method(fluid, mw_source, method, characterization)  
+    <h2>public  subroutine select_method(oil, mw_source, method, C, log_scn_z, plus_z, plus_mw)  
 </h2>
     
 
-    <p>This subroutine defines the calculation method to perform the characterization,&amp;
-based on the available experimental data. If the molecular weight data is experimental,
-define the mole fractions, molecular weights and densities directly from the input file. 
-On the other hand, if the molecular weights are assumed, they are recalculated according 
-to the methodology described by Martin et al and the molar fractions of the fluid are recalculated.</p>
 
 
     <h3>Arguments</h3>
@@ -175,22 +172,22 @@ to the methodology described by Martin et al and the molar fractions of the flui
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-fluid"></span>
-              type(<a href='../type/fluiddata.html'>FluidData</a>),
+              <span class="anchor" id="variable-oil"></span>
+              type(<a href='../type/fluiddata.html'>FluidData</a>)
             </td>
-<td>intent(inout)</td>
+<td></td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>fluid</strong></td>
+            <td><strong>oil</strong></td>
             <td>
-                <p>Derived type to save inlet or experimental information of fluid to be characterized.</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-mw_source~4"></span>
+              <span class="anchor" id="variable-mw_source~7"></span>
               character(len=*),
             </td>
 <td>intent(in)</td>
@@ -200,12 +197,12 @@ to the methodology described by Martin et al and the molar fractions of the flui
             <td>::</td>
             <td><strong>mw_source</strong></td>
             <td>
-                <p>This variable indicates the source of the input data, that is, whether they are experimental or not.</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-method~4"></span>
+              <span class="anchor" id="variable-method~5"></span>
               character(len=*),
             </td>
 <td>intent(in),</td>
@@ -215,22 +212,68 @@ to the methodology described by Martin et al and the molar fractions of the flui
             <td>::</td>
             <td><strong>method</strong></td>
             <td>
-                <p>this option allows choose beetwen obtaining plus_mw or global_mw reported in the experimental information .</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-characterization"></span>
-              type(<a href='../type/fluiddataout.html'>FluidDataOut</a>),
+              <span class="anchor" id="variable-c~2"></span>
+              real(kind=pr)
             </td>
-<td>intent(inout)</td>
+<td></td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>characterization</strong></td>
+            <td><strong>C</strong></td>
             <td>
-                <p>Derive type variable to save results of characterization methodology.</p>
+                <p>C constants which is used in equation <script type="math/tex; mode=display">M = 84-C(i-6)</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-log_scn_z~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>log_scn_z</strong>(:)</td>
+            <td>
+                <p>logarithm of corresponding mole fractions of scn cuts</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-plus_z~11"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>plus_z</strong></td>
+            <td>
+                <p>composition of residual fraction from input file</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-plus_mw~5"></span>
+              real(kind=pr)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>plus_mw</strong></td>
+            <td>
+                <p>calculated molecular weight of  residual fraction</p>
             </td>
         </tr>
     </tbody>
@@ -248,61 +291,46 @@ to the methodology described by Martin et al and the molar fractions of the flui
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~select_method~2~~CalledByGraph Pages: 1 -->
-<svg id="procselect_method2CalledByGraph" width="504pt" height="32pt"
- viewBox="0.00 0.00 504.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg id="procselect_method2CalledByGraph" width="391pt" height="32pt"
+ viewBox="0.00 0.00 391.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="proc~~select_method~2~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
 <title>proc~~select_method~2~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 500,-28 500,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 387,-28 387,4 -4,4"/>
 <!-- proc~select_method~2 -->
 <g id="proc~~select_method~2~~CalledByGraph_node1" class="node">
 <title>proc~select_method~2</title>
-<polygon fill="none" stroke="black" points="496,-24 405,-24 405,0 496,0 496,-24"/>
-<text text-anchor="middle" x="450.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">select_method</text>
+<polygon fill="none" stroke="black" points="383,-24 292,-24 292,0 383,0 383,-24"/>
+<text text-anchor="middle" x="337.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">select_method</text>
 </g>
 <!-- proc~difference_mw_plus~2 -->
 <g id="proc~~select_method~2~~CalledByGraph_node2" class="node">
 <title>proc~difference_mw_plus~2</title>
 <g id="a_proc~~select_method~2~~CalledByGraph_node2"><a xlink:href="../proc/difference_mw_plus~2.html" xlink:title="difference_mw_plus">
-<polygon fill="#d9534f" stroke="#d9534f" points="369,-24 251,-24 251,0 369,0 369,-24"/>
-<text text-anchor="middle" x="310" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">difference_mw_plus</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="256,-24 138,-24 138,0 256,0 256,-24"/>
+<text text-anchor="middle" x="197" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">difference_mw_plus</text>
 </a>
 </g>
 </g>
 <!-- proc~difference_mw_plus~2&#45;&gt;proc~select_method~2 -->
 <g id="proc~~select_method~2~~CalledByGraph_edge1" class="edge">
 <title>proc~difference_mw_plus~2&#45;&gt;proc~select_method~2</title>
-<path fill="none" stroke="#000000" d="M369.34,-12C377.65,-12 386.18,-12 394.44,-12"/>
-<polygon fill="#000000" stroke="#000000" points="394.7,-15.5 404.7,-12 394.7,-8.5 394.7,-15.5"/>
+<path fill="none" stroke="#000000" d="M256.34,-12C264.65,-12 273.18,-12 281.44,-12"/>
+<polygon fill="#000000" stroke="#000000" points="281.7,-15.5 291.7,-12 281.7,-8.5 281.7,-15.5"/>
 </g>
 <!-- proc~get_c_or_m_plus -->
 <g id="proc~~select_method~2~~CalledByGraph_node3" class="node">
 <title>proc~get_c_or_m_plus</title>
-<g id="a_proc~~select_method~2~~CalledByGraph_node3"><a xlink:href="../proc/get_c_or_m_plus.html" xlink:title="get_c_or_m_plus">
-<polygon fill="#d9534f" stroke="#d9534f" points="215,-24 115,-24 115,0 215,0 215,-24"/>
-<text text-anchor="middle" x="165" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_c_or_m_plus</text>
+<g id="a_proc~~select_method~2~~CalledByGraph_node3"><a xlink:href="../proc/get_c_or_m_plus.html" xlink:title="get_C_or_m_plus">
+<polygon fill="#d9534f" stroke="#d9534f" points="102,-24 0,-24 0,0 102,0 102,-24"/>
+<text text-anchor="middle" x="51" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_C_or_m_plus</text>
 </a>
 </g>
 </g>
 <!-- proc~get_c_or_m_plus&#45;&gt;proc~difference_mw_plus~2 -->
 <g id="proc~~select_method~2~~CalledByGraph_edge2" class="edge">
 <title>proc~get_c_or_m_plus&#45;&gt;proc~difference_mw_plus~2</title>
-<path fill="none" stroke="#000000" d="M215.21,-12C223.46,-12 232.14,-12 240.76,-12"/>
-<polygon fill="#000000" stroke="#000000" points="240.83,-15.5 250.83,-12 240.83,-8.5 240.83,-15.5"/>
-</g>
-<!-- proc~characterize -->
-<g id="proc~~select_method~2~~CalledByGraph_node4" class="node">
-<title>proc~characterize</title>
-<g id="a_proc~~select_method~2~~CalledByGraph_node4"><a xlink:href="../proc/characterize.html" xlink:title="characterize">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="79,-24 0,-24 0,0 79,0 79,-24"/>
-<text text-anchor="middle" x="39.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">characterize</text>
-</a>
-</g>
-</g>
-<!-- proc~characterize&#45;&gt;proc~get_c_or_m_plus -->
-<g id="proc~~select_method~2~~CalledByGraph_edge3" class="edge">
-<title>proc~characterize&#45;&gt;proc~get_c_or_m_plus</title>
-<path fill="none" stroke="#000000" d="M79.24,-12C87.37,-12 96.13,-12 104.82,-12"/>
-<polygon fill="#000000" stroke="#000000" points="104.95,-15.5 114.95,-12 104.95,-8.5 104.95,-15.5"/>
+<path fill="none" stroke="#000000" d="M102.36,-12C110.44,-12 118.91,-12 127.32,-12"/>
+<polygon fill="#000000" stroke="#000000" points="127.52,-15.5 137.52,-12 127.52,-8.5 127.52,-15.5"/>
 </g>
 </g>
 </svg>
@@ -453,6 +481,41 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
+              <span class="anchor" id="variable-scn_mw~5"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>scn_mw</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>set to molecular weights calculated by <script type="math/tex; mode=display">M = 84-C(i-6)</script>
+</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-scn_z~7"></span>
+              real(kind=pr),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>scn_z</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>set of corresponding calculated mole fractions of scn cuts</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-sum_def_comp_z_plus~3"></span>
               real(kind=pr),
             </td>
@@ -518,7 +581,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-08-12 19:37              </p>
+ on 2024-08-12 20:10              </p>
           </div>
         </div>
         <br>

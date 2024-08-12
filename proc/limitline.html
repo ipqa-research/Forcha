@@ -77,20 +77,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.6% of total for procedures.">25 statements</a>
+                 title=" 2.1% of total for procedures.">32 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/module.f90"> Source File</a>
+              <a href="../src/routines.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/module.f90.html'>module.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/routines_pre.html'>routines_pre</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/routines.f90.html'>routines.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/routines.html'>routines</a></li>
             <li class="breadcrumb-item active" aria-current="page">LimitLine</li>
           </ol>
         </nav>
@@ -117,12 +117,11 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/limitline.html#variable-crosscn">crossCN</a>
-            <a class="list-group-item" href="../proc/limitline.html#variable-imax~5">imax</a>
-            <a class="list-group-item" href="../proc/limitline.html#variable-xaux~2">xaux</a>
-            <a class="list-group-item" href="../proc/limitline.html#variable-zaux~2">zaux</a>
-            <a class="list-group-item" href="../proc/limitline.html#variable-zcross">zcross</a>
-            <a class="list-group-item" href="../proc/limitline.html#variable-zlim">zlim</a>
+            <a class="list-group-item" href="../proc/limitline.html#variable-cross_cn">cross_cn</a>
+            <a class="list-group-item" href="../proc/limitline.html#variable-x_aux~2">x_aux</a>
+            <a class="list-group-item" href="../proc/limitline.html#variable-z_aux~2">z_aux</a>
+            <a class="list-group-item" href="../proc/limitline.html#variable-z_cross">z_cross</a>
+            <a class="list-group-item" href="../proc/limitline.html#variable-z_lim">z_lim</a>
         </div>
       </div>
     </div>
@@ -152,10 +151,11 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public  subroutine LimitLine(Ncut, rCN, Zp, aBE, bBE, half, alim, blim, Cmax)  
+    <h2>public  subroutine LimitLine(scn_nc, scn, plus_z, a_blr, b_blr, a_lim, b_lim, c_max_lim, half)  
 </h2>
     
 
+    <p>This subroutine obtains the limit line constants for an fluid.</p>
 
 
     <h3>Arguments</h3>
@@ -171,135 +171,136 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ncut~5"></span>
-              integer
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Ncut</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-rcn~5"></span>
+              <span class="anchor" id="variable-scn_nc~9"></span>
               integer,
             </td>
-<td></td>
-              <td></td>            <td>
-              dimension(imax)
-            </td>
-            <td>::</td>
-            <td><strong>rCN</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-zp"></span>
-              real(kind=pr)
-            </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>Zp</strong></td>
+            <td><strong>scn_nc</strong></td>
             <td>
-                
+                <p>integer input variable set to the total number of single cuts being considered in the fluid.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-abe~3"></span>
-              real(kind=pr)
+              <span class="anchor" id="variable-scn~4"></span>
+              integer,
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>aBE</strong></td>
+            <td><strong>scn</strong>(:)</td>
             <td>
-                
+                <p>set of singles cuts being considered in the fluid.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-bbe~3"></span>
-              real(kind=pr)
+              <span class="anchor" id="variable-plus_z~6"></span>
+              real(kind=pr),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>bBE</strong></td>
+            <td><strong>plus_z</strong></td>
             <td>
-                
+                <p>composition of residual fraction from input file.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-half~3"></span>
-              real(kind=pr)
+              <span class="anchor" id="variable-a_blr~2"></span>
+              real(kind=pr),
             </td>
-<td></td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a_blr</strong></td>
+            <td>
+                <p>input constant from the Best linear regression.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b_blr~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b_blr</strong></td>
+            <td>
+                <p>input constant from the Best linear regression.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a_lim~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a_lim</strong></td>
+            <td>
+                <p>output real variable. Slope of the limit line.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b_lim~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b_lim</strong></td>
+            <td>
+                <p>output real variable. Intercept of the limit line.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c_max_lim~2"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>c_max_lim</strong></td>
+            <td>
+                <p>maximum carbon number obtained for limit line.
+output CN at which plus_z is reached, as the summation of single z(i) from the limit distribution (blr).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-half"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>half</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-alim~3"></span>
-              real(kind=pr)
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>alim</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-blim~3"></span>
-              real(kind=pr)
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>blim</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-cmax"></span>
-              integer
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Cmax</strong></td>
             <td>
                 
             </td>
@@ -319,103 +320,61 @@
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~limitline~~CalledByGraph Pages: 1 -->
-<svg id="proclimitlineCalledByGraph" width="334pt" height="116pt"
- viewBox="0.00 0.00 334.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~limitline~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<svg id="proclimitlineCalledByGraph" width="474pt" height="32pt"
+ viewBox="0.00 0.00 474.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~limitline~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
 <title>proc~~limitline~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 330,-112 330,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 470,-28 470,4 -4,4"/>
 <!-- proc~limitline -->
 <g id="proc~~limitline~~CalledByGraph_node1" class="node">
 <title>proc~limitline</title>
-<polygon fill="none" stroke="black" points="326,-66 265,-66 265,-42 326,-42 326,-66"/>
-<text text-anchor="middle" x="295.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">LimitLine</text>
+<polygon fill="none" stroke="black" points="466,-24 405,-24 405,0 466,0 466,-24"/>
+<text text-anchor="middle" x="435.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">LimitLine</text>
 </g>
-<!-- proc~difmpfromc -->
+<!-- proc~difference_mw_plus -->
 <g id="proc~~limitline~~CalledByGraph_node2" class="node">
-<title>proc~difmpfromc</title>
-<g id="a_proc~~limitline~~CalledByGraph_node2"><a xlink:href="../proc/difmpfromc.html" xlink:title="difMpfromC">
-<polygon fill="#d9534f" stroke="#d9534f" points="220.5,-66 146.5,-66 146.5,-42 220.5,-42 220.5,-66"/>
-<text text-anchor="middle" x="183.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">difMpfromC</text>
+<title>proc~difference_mw_plus</title>
+<g id="a_proc~~limitline~~CalledByGraph_node2"><a xlink:href="../proc/difference_mw_plus.html" xlink:title="difference_mw_plus">
+<polygon fill="#d9534f" stroke="#d9534f" points="369,-24 251,-24 251,0 369,0 369,-24"/>
+<text text-anchor="middle" x="310" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">difference_mw_plus</text>
 </a>
 </g>
 </g>
-<!-- proc~difmpfromc&#45;&gt;proc~limitline -->
+<!-- proc~difference_mw_plus&#45;&gt;proc~limitline -->
 <g id="proc~~limitline~~CalledByGraph_edge1" class="edge">
-<title>proc~difmpfromc&#45;&gt;proc~limitline</title>
-<path fill="none" stroke="#000000" d="M220.52,-54C231.34,-54 243.29,-54 254.36,-54"/>
-<polygon fill="#000000" stroke="#000000" points="254.65,-57.5 264.65,-54 254.65,-50.5 254.65,-57.5"/>
+<title>proc~difference_mw_plus&#45;&gt;proc~limitline</title>
+<path fill="none" stroke="#000000" d="M369.13,-12C377.84,-12 386.65,-12 394.86,-12"/>
+<polygon fill="#000000" stroke="#000000" points="394.88,-15.5 404.88,-12 394.88,-8.5 394.88,-15.5"/>
 </g>
-<!-- proc~difmpfromcfull -->
+<!-- proc~get_c_or_m_plus -->
 <g id="proc~~limitline~~CalledByGraph_node3" class="node">
-<title>proc~difmpfromcfull</title>
-<g id="a_proc~~limitline~~CalledByGraph_node3"><a xlink:href="../proc/difmpfromcfull.html" xlink:title="difMpfromCfull">
-<polygon fill="#d9534f" stroke="#d9534f" points="229,-108 138,-108 138,-84 229,-84 229,-108"/>
-<text text-anchor="middle" x="183.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">difMpfromCfull</text>
+<title>proc~get_c_or_m_plus</title>
+<g id="a_proc~~limitline~~CalledByGraph_node3"><a xlink:href="../proc/get_c_or_m_plus.html" xlink:title="get_c_or_m_plus">
+<polygon fill="#d9534f" stroke="#d9534f" points="215,-24 115,-24 115,0 215,0 215,-24"/>
+<text text-anchor="middle" x="165" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_c_or_m_plus</text>
 </a>
 </g>
 </g>
-<!-- proc~difmpfromcfull&#45;&gt;proc~limitline -->
+<!-- proc~get_c_or_m_plus&#45;&gt;proc~difference_mw_plus -->
 <g id="proc~~limitline~~CalledByGraph_edge2" class="edge">
-<title>proc~difmpfromcfull&#45;&gt;proc~limitline</title>
-<path fill="none" stroke="#000000" d="M216.02,-83.96C228.26,-79.29 242.42,-73.89 255.31,-68.96"/>
-<polygon fill="#000000" stroke="#000000" points="256.77,-72.15 264.86,-65.32 254.27,-65.61 256.77,-72.15"/>
+<title>proc~get_c_or_m_plus&#45;&gt;proc~difference_mw_plus</title>
+<path fill="none" stroke="#000000" d="M215.21,-12C223.46,-12 232.14,-12 240.76,-12"/>
+<polygon fill="#000000" stroke="#000000" points="240.83,-15.5 250.83,-12 240.83,-8.5 240.83,-15.5"/>
 </g>
-<!-- proc~difnewmp -->
+<!-- proc~characterize -->
 <g id="proc~~limitline~~CalledByGraph_node4" class="node">
-<title>proc~difnewmp</title>
-<g id="a_proc~~limitline~~CalledByGraph_node4"><a xlink:href="../proc/difnewmp.html" xlink:title="difnewMp">
-<polygon fill="#d9534f" stroke="#d9534f" points="215.5,-24 151.5,-24 151.5,0 215.5,0 215.5,-24"/>
-<text text-anchor="middle" x="183.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">difnewMp</text>
+<title>proc~characterize</title>
+<g id="a_proc~~limitline~~CalledByGraph_node4"><a xlink:href="../proc/characterize.html" xlink:title="characterize">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="79,-24 0,-24 0,0 79,0 79,-24"/>
+<text text-anchor="middle" x="39.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">characterize</text>
 </a>
 </g>
 </g>
-<!-- proc~difnewmp&#45;&gt;proc~limitline -->
+<!-- proc~characterize&#45;&gt;proc~get_c_or_m_plus -->
 <g id="proc~~limitline~~CalledByGraph_edge3" class="edge">
-<title>proc~difnewmp&#45;&gt;proc~limitline</title>
-<path fill="none" stroke="#000000" d="M215.73,-23.92C227.98,-28.6 242.17,-34.02 255.11,-38.96"/>
-<polygon fill="#000000" stroke="#000000" points="254.12,-42.33 264.71,-42.63 256.62,-35.79 254.12,-42.33"/>
-</g>
-<!-- proc~get_c -->
-<g id="proc~~limitline~~CalledByGraph_node5" class="node">
-<title>proc~get_c</title>
-<g id="a_proc~~limitline~~CalledByGraph_node5"><a xlink:href="../proc/get_c.html" xlink:title="get_C">
-<polygon fill="#d9534f" stroke="#d9534f" points="78,-97 24,-97 24,-73 78,-73 78,-97"/>
-<text text-anchor="middle" x="51" y="-82.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_C</text>
-</a>
-</g>
-</g>
-<!-- proc~get_c&#45;&gt;proc~difmpfromc -->
-<g id="proc~~limitline~~CalledByGraph_edge4" class="edge">
-<title>proc~get_c&#45;&gt;proc~difmpfromc</title>
-<path fill="none" stroke="#000000" d="M78.09,-78.8C94.69,-74.86 116.65,-69.64 136.14,-65.01"/>
-<polygon fill="#000000" stroke="#000000" points="137.15,-68.37 146.07,-62.65 135.53,-61.56 137.15,-68.37"/>
-</g>
-<!-- proc~get_c&#45;&gt;proc~difmpfromcfull -->
-<g id="proc~~limitline~~CalledByGraph_edge6" class="edge">
-<title>proc~get_c&#45;&gt;proc~difmpfromcfull</title>
-<path fill="none" stroke="#000000" d="M78.09,-87.2C92.4,-88.41 110.68,-89.95 127.94,-91.4"/>
-<polygon fill="#000000" stroke="#000000" points="127.68,-94.89 137.94,-92.24 128.27,-87.92 127.68,-94.89"/>
-</g>
-<!-- proc~getnewmpfromc -->
-<g id="proc~~limitline~~CalledByGraph_node6" class="node">
-<title>proc~getnewmpfromc</title>
-<g id="a_proc~~limitline~~CalledByGraph_node6"><a xlink:href="../proc/getnewmpfromc.html" xlink:title="GetNewMpfromC">
-<polygon fill="#d9534f" stroke="#d9534f" points="102,-45 0,-45 0,-21 102,-21 102,-45"/>
-<text text-anchor="middle" x="51" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GetNewMpfromC</text>
-</a>
-</g>
-</g>
-<!-- proc~getnewmpfromc&#45;&gt;proc~difmpfromc -->
-<g id="proc~~limitline~~CalledByGraph_edge5" class="edge">
-<title>proc~getnewmpfromc&#45;&gt;proc~difmpfromc</title>
-<path fill="none" stroke="#000000" d="M102.08,-41.06C113.31,-42.87 125.17,-44.77 136.23,-46.55"/>
-<polygon fill="#000000" stroke="#000000" points="135.7,-50.01 146.13,-48.15 136.81,-43.1 135.7,-50.01"/>
-</g>
-<!-- proc~getnewmpfromc&#45;&gt;proc~difnewmp -->
-<g id="proc~~limitline~~CalledByGraph_edge7" class="edge">
-<title>proc~getnewmpfromc&#45;&gt;proc~difnewmp</title>
-<path fill="none" stroke="#000000" d="M102.08,-24.94C115,-22.86 128.75,-20.65 141.17,-18.65"/>
-<polygon fill="#000000" stroke="#000000" points="141.91,-22.08 151.23,-17.03 140.8,-15.16 141.91,-22.08"/>
+<title>proc~characterize&#45;&gt;proc~get_c_or_m_plus</title>
+<path fill="none" stroke="#000000" d="M79.24,-12C87.37,-12 96.13,-12 104.82,-12"/>
+<polygon fill="#000000" stroke="#000000" points="104.95,-15.5 114.95,-12 104.95,-8.5 104.95,-15.5"/>
 </g>
 </g>
 </svg>
@@ -515,7 +474,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-crosscn"></span>
+              <span class="anchor" id="variable-cross_cn"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -523,7 +482,7 @@ implementation in a submodule of an interface in a parent module.
               
             </td>
             <td>::</td>
-            <td><strong>crossCN</strong></td>
+            <td><strong>cross_cn</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -532,24 +491,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-imax~5"></span>
-              integer,
-            </td>
-              <td>public,</td>
-            <td>
-parameter               
-            </td>
-            <td>::</td>
-            <td><strong>imax</strong></td>
-<td> =</td>
-                <td>48</td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-xaux~2"></span>
+              <span class="anchor" id="variable-x_aux~2"></span>
               integer,
             </td>
               <td>public</td>
@@ -557,7 +499,7 @@ parameter
               
             </td>
             <td>::</td>
-            <td><strong>xaux</strong></td>
+            <td><strong>x_aux</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -566,7 +508,7 @@ parameter
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zaux~2"></span>
+              <span class="anchor" id="variable-z_aux~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -574,7 +516,7 @@ parameter
               
             </td>
             <td>::</td>
-            <td><strong>zaux</strong></td>
+            <td><strong>z_aux</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -583,7 +525,7 @@ parameter
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zcross"></span>
+              <span class="anchor" id="variable-z_cross"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -591,7 +533,7 @@ parameter
               
             </td>
             <td>::</td>
-            <td><strong>zcross</strong></td>
+            <td><strong>z_cross</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -600,7 +542,7 @@ parameter
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zlim"></span>
+              <span class="anchor" id="variable-z_lim"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -608,7 +550,7 @@ parameter
               
             </td>
             <td>::</td>
-            <td><strong>zlim</strong></td>
+            <td><strong>z_lim</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -648,7 +590,7 @@ parameter
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-08-12 19:37              </p>
+ on 2024-08-12 20:10              </p>
           </div>
         </div>
         <br>
