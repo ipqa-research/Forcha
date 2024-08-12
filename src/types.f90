@@ -63,6 +63,7 @@ module dtypes
       real(pr), allocatable :: scn_i(:)
       real(pr), allocatable :: plus6_density(:)
       real(pr) :: plus_w
+      real(pr) :: plus_density
    end type FluidDataOut
 
 end module dtypes

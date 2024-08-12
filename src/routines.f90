@@ -544,7 +544,8 @@ contains
          cn_plus => characterization%carbon_number_plus, &
          z_m_plus_i => characterization%product_z_mw_plus_i, &
          scn_z_i => characterization%scn_z, &
-         scn_mw_i => characterization%scn_mw &
+         scn_mw_i => characterization%scn_mw, &
+         scn_zm => characterization%scn_zm &
          )
       
       scn_density_cal = ((a_d)*(exp(- (real(fluid%scn, pr))/10._pr))) + b_d
@@ -553,12 +554,12 @@ contains
    
       select case (mw_source)
          case("experimental")
-            volume_6plus_cal = sum((scn_z_i*scn_mw_i)/(fluid%scn_density)) + &
+            volume_6plus_cal = sum((scn_zm)/(fluid%scn_density)) + &
             sum(z_m_plus_i/plus_density_cal)  
             plus6_density = [fluid%scn_density, plus_density_cal]
 
          case("calculated")
-            volume_6plus_cal = sum((scn_z_i*scn_mw_i)/(scn_density_cal)) + &
+            volume_6plus_cal = sum((scn_zm)/(scn_density_cal)) + &
             sum(z_m_plus_i/plus_density_cal)
             plus6_density = [scn_density_cal, plus_density_cal]
       end select
@@ -598,6 +599,7 @@ contains
      
       associate (&
          plus_zm => characterization%plus_zm,  &
+         plus_density => characterization%plus_density,  &
          scn_zm => characterization%scn_zm, &
          plus_z => characterization%plus_z, &
          scn_z => characterization%scn_z, &
@@ -704,10 +706,10 @@ contains
          print*, 'ps',i, plus_z_ps(i), plus_mw_ps(i), density_ps(i), j_ps(i), carbon_number_plus(scn_nc_new+i)
       end do
 
-      end associate
-      
-      !characterization%product_z_mw_plus_i = z_m_plus_i
-      !characterization%plus_z_i = plus_z_i
+      plus_density = plus_zm / sum(plus_z_ps(1:numbers_ps)* &
+                     plus_mw_ps(1:numbers_ps)/(density_ps(1:numbers_ps)))
+      print*, plus_density
+
       characterization%last_C = last_C
       characterization%i_last = i_last
 
@@ -716,7 +718,7 @@ contains
       !do i = 1, scn_nc_new
       !   print*,  prev_i + i ,  characterization%scn_z(i) , characterization%scn_mw(i)
       !end do
-      
+      end associate
       
    end subroutine lump
 
