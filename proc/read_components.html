@@ -77,7 +77,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.1% of total for procedures.">16 statements</a>
+                 title=" 1.2% of total for procedures.">18 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -117,9 +117,11 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/read_components.html#variable-def_comp_nc~3">def_comp_nc</a>
+            <a class="list-group-item" href="../proc/read_components.html#variable-def_comp_nc~2">def_comp_nc</a>
             <a class="list-group-item" href="../proc/read_components.html#variable-funit~2">funit</a>
-            <a class="list-group-item" href="../proc/read_components.html#variable-scn_nc~6">scn_nc</a>
+            <a class="list-group-item" href="../proc/read_components.html#variable-numbers_ps~2">numbers_ps</a>
+            <a class="list-group-item" href="../proc/read_components.html#variable-scn_nc~3">scn_nc</a>
+            <a class="list-group-item" href="../proc/read_components.html#variable-scn_nc_ps~2">scn_nc_ps</a>
         </div>
       </div>
     </div>
@@ -195,7 +197,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-def_components~2"></span>
+              <span class="anchor" id="variable-def_components"></span>
               character(len=15),
             </td>
 <td>intent(out),</td>
@@ -210,7 +212,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-scn~5"></span>
+              <span class="anchor" id="variable-scn~2"></span>
               integer,
             </td>
 <td>intent(out),</td>
@@ -225,7 +227,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-scn_plus~2"></span>
+              <span class="anchor" id="variable-scn_plus"></span>
               character(len=15),
             </td>
 <td>intent(out)</td>
@@ -510,7 +512,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-def_comp_nc~3"></span>
+              <span class="anchor" id="variable-def_comp_nc~2"></span>
               integer,
             </td>
               <td>public</td>
@@ -544,7 +546,24 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-scn_nc~6"></span>
+              <span class="anchor" id="variable-numbers_ps~2"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>numbers_ps</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>number of pseudos in which the scn fractions grouped</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-scn_nc~3"></span>
               integer,
             </td>
               <td>public</td>
@@ -557,6 +576,23 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
             <td>
                 <p>number of single cuts being considered in the oil</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-scn_nc_ps~2"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>scn_nc_ps</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>CN from which all SCN fractions will be lumped into the specified number of pseudos</p>
             </td>
         </tr>
     </tbody>
@@ -592,22 +628,22 @@ implementation in a submodule of an interface in a parent module.
           <th>Description</th>
       </tr></thead>
       <tbody>
-              <tr id="variable-def_components~2">
-      <td><a href="#variable-def_components~2">def_components</a></td>
+              <tr id="variable-def_components">
+      <td><a href="#variable-def_components">def_components</a></td>
       <td>character(len=15)</td>
       <td>None</td>
       <td><p>names of defined components</p></td>
     </tr>
 
-              <tr id="variable-scn~5">
-      <td><a href="#variable-scn~5">scn</a></td>
+              <tr id="variable-scn~2">
+      <td><a href="#variable-scn~2">scn</a></td>
       <td>integer</td>
       <td>None</td>
       <td><p>names of scn fractions</p></td>
     </tr>
 
-              <tr id="variable-scn_plus~2">
-      <td><a href="#variable-scn_plus~2">scn_plus</a></td>
+              <tr id="variable-scn_plus">
+      <td><a href="#variable-scn_plus">scn_plus</a></td>
       <td>character(len=15)</td>
       <td>None</td>
       <td><p>name of residual fraction</p></td>
@@ -641,7 +677,7 @@ implementation in a submodule of an interface in a parent module.
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2024-07-30 17:21              </p>
+ on 2024-08-12 19:37              </p>
           </div>
         </div>
         <br>
