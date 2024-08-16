@@ -11,7 +11,7 @@
         ! number of defined components before scn
     scn_nc = 14 
         ! number of single carbon number components  
-    scn_nc_ps = 20
+    scn_nc_ps = 10
         ! CN from which all SCN fractions will be lumped into the specified number of pseudos
     numbers_ps = 5
         ! number of pseudos in which the scn fractions grouped

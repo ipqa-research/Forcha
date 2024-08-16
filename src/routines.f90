@@ -566,7 +566,7 @@ contains
 
       characterization%volume_6plus_cal = volume_6plus_cal
       characterization%plus6_density = plus6_density
-
+      
       end associate
    
    end subroutine calculate_volume_6plus
@@ -596,8 +596,11 @@ contains
       real(pr), allocatable :: density_ps(:)
       real(pr), allocatable :: w_ps(:)
       real(pr) :: sum_zm_last_ps
+      real(pr), allocatable :: moles(:)
      
       associate (&
+         def_nc => fluid%def_comp_nc ,  &
+         scn_mw => characterization%scn_mw,  &
          plus_zm => characterization%plus_zm,  &
          plus_density => characterization%plus_density,  &
          scn_zm => characterization%scn_zm, &
@@ -622,6 +625,7 @@ contains
       allocate (plus_mw_ps(0))
       allocate(density_ps(0))
       allocate (w_ps(0))
+      allocate(moles(0))
 
       scn_nc_input =  fluid%scn_nc
       scn_nc_new = fluid%scn_nc_ps - 6 
@@ -656,7 +660,7 @@ contains
       ! Lumping into Nps pseudos
       rec_zm = plus_zm / numbers_ps 
       ! Recommended value for the product z*M (proportional to weight) 
-      !for each pseudo according to pedersen
+      ! for each pseudo according to pedersen
       remain_plus_zm = plus_zm
       i_ps = 1._pr
       sum_z = 0.0_pr
@@ -692,7 +696,6 @@ contains
       ! at this point, Nps is the order for the last NON-Asphaltenic pseudo comp. 
       ! (e.g. 4 if 5 is for Asphaltenes) 
       plus_mw_ps =[plus_mw_ps, sum(z_m_plus_i(i+1:i_last))/plus_z_ps(numbers_ps)] 
-      ! (zMp - sum(zMpi(1:i))) / zps(Nps)
       w_ps = [w_ps, characterization%plus_w * ((plus_z_ps(numbers_ps))* & 
                      (plus_mw_ps(numbers_ps))/(plus_zm))]
       carbon_number_plus(scn_nc_new + numbers_ps) = 6 + &
@@ -708,28 +711,34 @@ contains
 
       plus_density = plus_zm / sum(plus_z_ps(1:numbers_ps)* &
                      plus_mw_ps(1:numbers_ps)/(density_ps(1:numbers_ps)))
-      print*, plus_density
-
+                   
+      moles = [moles, (fluid%def_comp_w)/(fluid%def_comp_mw)]
+      moles = [moles, fluid%w(def_nc+1:def_nc+scn_nc_new)/ scn_mw(1:scn_nc_new)]
+      moles = [moles, w_ps/plus_mw_ps ]
+      characterization%mol_fraction = moles/sum(moles) ! mole fractions normalize
+      
       characterization%last_C = last_C
       characterization%i_last = i_last
-
-      !! esto es lo que haria en el write, luego eliminar este comentario.
-      !prev_i = fluid%scn(1)-1
-      !do i = 1, scn_nc_new
-      !   print*,  prev_i + i ,  characterization%scn_z(i) , characterization%scn_mw(i)
-      !end do
+      
       end associate
       
    end subroutine lump
 
-   subroutine get_critical_constants(fluid, characterization)
-      !! this subroutine ....
+   subroutine get_critical_constants(fluid, characterization, eos)
+      !! this subroutine doing:
+      !! - Calculation of Tc, Pc, omega from Pedersen correlations (adapted from code "C7plusPedersenTcPcOm")
+      !! - Calculation of EoS parameters (taken from CubicParam)
+      
+      implicit none
       type(FluidData), intent(in) :: fluid
       type(FluidDataOut), intent(inout) :: characterization
-      !implicit none
-
+      character(len=*), intent(in) :: eos
       
 
+      
+      !select case ()
+      
+      !end select
 
 
 
@@ -737,7 +746,7 @@ contains
 
    end subroutine get_critical_constants
 
-   type(FluidDataOut) function characterize(file, mw_source, method, fix_C) &
+   type(FluidDataOut) function characterize(file, mw_source, method, fix_C, eos) &
          result(characterization)
 
       type(FluidData) :: fluid
@@ -745,6 +754,7 @@ contains
       character(len=*), intent(in), optional :: method !! plus_mw or global_mw
       character(len=*), intent(in) :: mw_source
       logical, intent(in), optional :: fix_C
+      character(len=*), intent(in) :: eos
 
 
       fluid = data_from_file(file)
@@ -757,6 +767,7 @@ contains
       allocate(characterization%scn_zm(fluid%scn_nc))
       allocate(characterization%scn_i(0))
       allocate(characterization%plus6_density(0))
+      allocate(characterization%mol_fraction(0))
       
 
       call get_c_or_m_plus(fluid=fluid, mw_source=mw_source, method=method, fix_C=fix_C, characterization= characterization)

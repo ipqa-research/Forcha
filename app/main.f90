@@ -9,7 +9,7 @@ program main
    type(FluidData) :: fluid
    
 
-   prueba = characterize(file='oil1.nml', mw_source="calculated", method = "plus_mw", fix_C=.true.)
+   prueba = characterize(file='oil1.nml', mw_source="calculated", method = "plus_mw", fix_C=.true., eos='eos')
    print*, prueba%n_init
    print*, prueba%a , prueba%b
    print*, prueba%C, prueba%plus_mw
