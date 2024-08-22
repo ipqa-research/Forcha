@@ -734,11 +734,77 @@ contains
       type(FluidDataOut), intent(inout) :: characterization
       character(len=*), intent(in) :: eos
       
+      select case (eos)
 
+      case("srk")
+         ! Coeficientes originales Tabla 5.3 Pedersen
+         c1 = 1.6312e2_pr 
+         c2 = 8.6052d1
+         c3 = 4.3475d-1
+         c4 = -1.8774d3
+         d1P = -1.3408d-1
+         d2 = 2.5019
+         d3 = 2.0846d2
+         d4 = -3.9872d3
+         d5 = 1.0d0
+         e1 = 7.4310d-1
+         e2 = 4.8122d-3
+         e3 = 9.6707d-3
+         e4 = -3.7184d-6
+         A = -0.176
+         B = 1.574
+         C0 = 0.48
+         del1 = 1.0D0   
+      case("pr")
+         ! Coeficientes originales Tabla 5.3 Pedersen
+         c1 = 7.34043d1
+         c2 = 9.73562d1    
+         c3 = 6.18744d-1
+         c4 = -2.05932d3
+         d1P = 7.28462d-2
+         d2 = 2.18811d0
+         d3 = 1.63910d2
+         d4 = -4.04323d3
+         d5 = 0.25d0
+         e1 = 3.73765d-1
+         e2 = 5.49269d-3
+         e3 = 1.17934d-2
+         e4 = -4.93049d-6
+         A = -0.26992
+         B = 1.54226
+         C0 = 0.37464
+         del1 = 1.0D0 + sqrt(2.0) 
+      case("rkpr")
+         c1 = 7.34043d1
+         c2 = 9.73562d1    
+         c3 = 6.18744d-1
+         c4 = -2.05932d3
+         d1P = 2.3d0
+         d2 = -0.5d0
+         d3 = 1.85d2
+         d4 = -4.0d3
+         d5 = 0.25d0
+         e1 = 3.73765d-1
+         e2 = 5.49269d-3
+         e3 = 1.17934d-2
+         e4 = -4.93049d-6
+         A = -0.26992
+         B = 1.54226
+         C0 = 0.37464
+      end select
+
+      if (eos == "pr" .or. eos=="srk")
+
+         d1 = (1 + del1**2)/(1 + del1)
+         y = 1 + (2*(1 + del1))**(1.0d0/3) + (4/(1 + del1))**(1.0d0/3)
+         OMa = (3*y*y + 3*y*d1 + d1**2 + d1 - 1.0d0)/(3*y + d1 - 1.0d0)**2
+         OMb = 1/(3*y + d1 - 1.0d0)
+         Zc = y/(3*y + d1 - 1.0d0)
+
+      endif
       
-      !select case ()
       
-      !end select
+
 
 
 
