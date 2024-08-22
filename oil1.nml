@@ -11,6 +11,10 @@
         ! number of defined components before scn
     scn_nc = 14 
         ! number of single carbon number components  
+    scn_nc_ps = 10
+        ! CN from which all SCN fractions will be lumped into the specified number of pseudos
+    numbers_ps = 5
+        ! number of pseudos in which the scn fractions grouped
 /
 &nml_components
     def_components = "N2" "CO2" "C1" "C2" "C3" "iC4" "nC4" "iC5" "nC5"  
@@ -38,3 +42,10 @@
     plus_mw = 470.7 
         ! molecular weight of residual fraction  
 /
+&nml_density   
+    scn_density = 0.685 0.749 0.768 0.793 0.808 0.815 0.836 0.85 0.861 0.873 0.882 0.873 0.875 0.885
+        ! density of single carbon numbers
+    plus_density = 0.936 
+        ! density of residual fraction
+/
+
