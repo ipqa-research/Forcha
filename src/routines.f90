@@ -589,7 +589,7 @@ contains
       integer :: i, prev_i 
       integer, dimension(15) :: j_ps
       integer :: i_ps       ! auxiliary variables
-      real(pr) :: rec_zm, remain_plus_zm, sum_z, sum_zm, sum_volume_ps   ! auxiliary variables
+      real(pr) :: rec_zm, remain_plus_zm, sum_z, sum_zm, sum_volume_ps  ! auxiliary variables
       real(pr), allocatable ::  plus_z_ps(:)
       real(pr), allocatable :: plus_mw_ps(:)
       integer :: numbers_ps
@@ -597,6 +597,9 @@ contains
       real(pr), allocatable :: w_ps(:)
       real(pr) :: sum_zm_last_ps
       real(pr), allocatable :: moles(:)
+      real(pr), allocatable :: lumped_z(:)
+      real(pr), allocatable :: lumped_mw(:)
+      real(pr), allocatable :: lumped_densities(:)
      
       associate (&
          def_nc => fluid%def_comp_nc ,  &
@@ -610,6 +613,7 @@ contains
          w => fluid%w, &
          plus_mw => characterization%plus_mw, &
          carbon_number_plus => characterization%carbon_number_plus, &
+         plus6_density => characterization%plus6_density, &
          C => characterization%C &
       )
       
@@ -626,6 +630,10 @@ contains
       allocate(density_ps(0))
       allocate (w_ps(0))
       allocate(moles(0))
+      allocate(lumped_z(0))
+      allocate(lumped_mw(0))
+      allocate(lumped_densities(0))
+
 
       scn_nc_input =  fluid%scn_nc
       scn_nc_new = fluid%scn_nc_ps - 6 
@@ -654,6 +662,10 @@ contains
          characterization%product_z_mw_plus_i = z_m_plus_i
          characterization%plus_z_i = plus_z_i
       end if   
+
+      !do i= 1, scn_nc_new
+      !      print*, scn_z(i), scn_mw(i)
+      !end do
       
       numbers_ps = fluid%numbers_ps
       j_ps = 0
@@ -674,8 +686,7 @@ contains
          j_ps(i_ps) = j_ps(i_ps) + 1 
          sum_z = sum_z + plus_z_i(i) 
          sum_zm = sum_zm + z_m_plus_i(i)
-         sum_volume_ps = sum_volume_ps + z_m_plus_i(i) / &
-                           characterization%plus6_density(scn_nc_new+i)
+         sum_volume_ps = sum_volume_ps + z_m_plus_i(i) / plus6_density(scn_nc_new+i)
          if (z_m_plus_i(i+1) > 2*(rec_zm - sum_zm)) then 
             ! when adding one more would go too far
             plus_z_ps  = [plus_z_ps, sum_z]
@@ -701,9 +712,8 @@ contains
       carbon_number_plus(scn_nc_new + numbers_ps) = 6 + &
                      ((plus_mw_ps(numbers_ps) - 84) / C)
       sum_zm_last_ps = (sum(z_m_plus_i(i+1:i_last)))
-      density_ps = [density_ps, ((sum_zm_last_ps)/(sum(z_m_plus_i(i+1:i_last)) & 
-                   /(characterization%plus6_density(scn_nc_new+i+1:i_last))))]
-      j_ps(numbers_ps) = i_last - sum(j_ps(1: numbers_ps-1))
+      density_ps = [density_ps, (sum_zm_last_ps)/sum((z_m_plus_i(i+1:i_last)) / (plus6_density(scn_nc_new+i+1:last)))]
+      j_ps(numbers_ps) = i_last - sum(j_ps(1: numbers_ps-1)) !! revisar manana
 
       do i = 1, numbers_ps
          print*, 'ps',i, plus_z_ps(i), plus_mw_ps(i), density_ps(i), j_ps(i), carbon_number_plus(scn_nc_new+i)
@@ -715,10 +725,23 @@ contains
       moles = [moles, (fluid%def_comp_w)/(fluid%def_comp_mw)]
       moles = [moles, fluid%w(def_nc+1:def_nc+scn_nc_new)/ scn_mw(1:scn_nc_new)]
       moles = [moles, w_ps/plus_mw_ps ]
-      characterization%mol_fraction = moles/sum(moles) ! mole fractions normalize
       
+      characterization%mol_fraction = moles/sum(moles) ! mole fractions normalize
       characterization%last_C = last_C
       characterization%i_last = i_last
+      characterization%last = last
+
+      ! In this point we create a new array to content final Mis and densities 
+      ! whit pseudos.
+
+      lumped_z = [scn_z(1:scn_nc_new), plus_z_ps]
+      lumped_mw = [scn_mw(1:scn_nc_new), plus_mw_ps]
+      lumped_densities = [plus6_density(1:scn_nc_new), density_ps ]
+      
+
+      characterization%lumped_z = lumped_z
+      characterization%lumped_mw = lumped_mw
+      characterization%lumped_densities = lumped_densities
       
       end associate
       
@@ -728,87 +751,52 @@ contains
       !! this subroutine doing:
       !! - Calculation of Tc, Pc, omega from Pedersen correlations (adapted from code "C7plusPedersenTcPcOm")
       !! - Calculation of EoS parameters (taken from CubicParam)
-      
+      use critical_parameters
+
       implicit none
       type(FluidData), intent(in) :: fluid
       type(FluidDataOut), intent(inout) :: characterization
       character(len=*), intent(in) :: eos
+      real(pr), allocatable :: modified_c(:)
+      real(pr), allocatable :: tc(:)
+      real(pr), allocatable :: pc(:)
+      real(pr), allocatable :: om(:)
+      real(pr), allocatable :: m_funtion(:)
+      integer :: i
       
-      select case (eos)
+      associate(&
+      rho => characterization%lumped_densities, &
+      mw  => characterization%lumped_mw &
+      )
+       
+      allocate(modified_c(0))
+      allocate(tc(0))
+      allocate(pc(0))
+      allocate(om(0))
+      allocate(m_funtion(0))
 
-      case("srk")
-         ! Coeficientes originales Tabla 5.3 Pedersen
-         c1 = 1.6312e2_pr 
-         c2 = 8.6052d1
-         c3 = 4.3475d-1
-         c4 = -1.8774d3
-         d1P = -1.3408d-1
-         d2 = 2.5019
-         d3 = 2.0846d2
-         d4 = -3.9872d3
-         d5 = 1.0d0
-         e1 = 7.4310d-1
-         e2 = 4.8122d-3
-         e3 = 9.6707d-3
-         e4 = -3.7184d-6
-         A = -0.176
-         B = 1.574
-         C0 = 0.48
-         del1 = 1.0D0   
-      case("pr")
-         ! Coeficientes originales Tabla 5.3 Pedersen
-         c1 = 7.34043d1
-         c2 = 9.73562d1    
-         c3 = 6.18744d-1
-         c4 = -2.05932d3
-         d1P = 7.28462d-2
-         d2 = 2.18811d0
-         d3 = 1.63910d2
-         d4 = -4.04323d3
-         d5 = 0.25d0
-         e1 = 3.73765d-1
-         e2 = 5.49269d-3
-         e3 = 1.17934d-2
-         e4 = -4.93049d-6
-         A = -0.26992
-         B = 1.54226
-         C0 = 0.37464
-         del1 = 1.0D0 + sqrt(2.0) 
-      case("rkpr")
-         c1 = 7.34043d1
-         c2 = 9.73562d1    
-         c3 = 6.18744d-1
-         c4 = -2.05932d3
-         d1P = 2.3d0
-         d2 = -0.5d0
-         d3 = 1.85d2
-         d4 = -4.0d3
-         d5 = 0.25d0
-         e1 = 3.73765d-1
-         e2 = 5.49269d-3
-         e3 = 1.17934d-2
-         e4 = -4.93049d-6
-         A = -0.26992
-         B = 1.54226
-         C0 = 0.37464
-      end select
+      call get_parameteres_for_critical(eos)
+      
+      tc = c1*rho + c2*log(mw) + c3*mw + (c4/mw)
+      pc = exp(d1_p + d2*(rho**(d5)) + (d3/mw) + (d4/(mw**2)))
 
-      if (eos == "pr" .or. eos=="srk")
-
-         d1 = (1 + del1**2)/(1 + del1)
-         y = 1 + (2*(1 + del1))**(1.0d0/3) + (4/(1 + del1))**(1.0d0/3)
-         OMa = (3*y*y + 3*y*d1 + d1**2 + d1 - 1.0d0)/(3*y + d1 - 1.0d0)**2
-         OMb = 1/(3*y + d1 - 1.0d0)
-         Zc = y/(3*y + d1 - 1.0d0)
-
+      if (eos == "SRK") then
+         m_funtion = e1 + e2*mw + e3*rho + e4*(mw**(2))
+      else
+      if (eos == "PR" .or. eos =="RKPR") then
+         m_funtion = e3*rho + 0.2 + 1.8*(1-exp(-mw/220))
+         ! Alternative expression without max with MW - May 2019
+      endif
       endif
       
+      modified_c = c0 - m_funtion
+      om = (-b + sqrt(b**2 - 4*a*modified_c))/(2*a)
       
+      do i = 1, size(mw)  
+         print*, mw(i), rho(i), tc(i), pc(i), om(i), m_funtion(i)
+      end do 
 
-
-
-
-
+      end associate
 
    end subroutine get_critical_constants
 
@@ -834,11 +822,18 @@ contains
       allocate(characterization%scn_i(0))
       allocate(characterization%plus6_density(0))
       allocate(characterization%mol_fraction(0))
-      
+      allocate(characterization%lumped_z(0))
+      allocate(characterization%lumped_mw(0))
+      allocate(characterization%lumped_densities(0))
+      allocate(characterization%critical_temperature(0))
+      allocate(characterization%critical_pressure(0))
+      allocate(characterization%acentric_factor(0))
+      allocate(characterization%m_funtion(0))
 
       call get_c_or_m_plus(fluid=fluid, mw_source=mw_source, method=method, fix_C=fix_C, characterization= characterization)
       call density_funtion(fluid=fluid, mw_source=mw_source, characterization=characterization)
       call lump(fluid=fluid, characterization=characterization)
+      call get_critical_constants(fluid= fluid, characterization=characterization, eos=eos)
 
    end function characterize
 

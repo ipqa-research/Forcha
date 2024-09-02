@@ -60,11 +60,19 @@ module dtypes
       real(pr) :: volume_6plus_cal
       integer :: last_C
       integer :: i_last
+      integer :: last
       real(pr), allocatable :: scn_i(:)
       real(pr), allocatable :: plus6_density(:)
       real(pr) :: plus_w
       real(pr) :: plus_density
       real(pr), allocatable :: mol_fraction(:)
+      real(pr), allocatable ::  lumped_z(:)
+      real(pr), allocatable ::  lumped_mw(:)
+      real(pr), allocatable ::  lumped_densities(:)
+      real(pr), allocatable :: critical_temperature(:)
+      real(pr), allocatable :: critical_pressure(:)
+      real(pr), allocatable :: acentric_factor(:)
+      real(pr), allocatable :: m_funtion (:)
    end type FluidDataOut
 
    
