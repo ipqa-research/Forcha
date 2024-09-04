@@ -564,14 +564,14 @@ contains
             plus6_density = [scn_density_cal, plus_density_cal]
       end select
 
-      characterization%volume_6plus_cal = volume_6plus_cal
+      characterization%volume_6plus_cal = volume_6plus_cal                           
       characterization%plus6_density = plus6_density
       
       end associate
    
    end subroutine calculate_volume_6plus
 
-   subroutine lump (fluid, characterization)
+   subroutine lump(fluid, characterization)                                                       
       !! This sobroutine ...
       implicit none 
       type(FluidData), intent(in) :: fluid
@@ -614,7 +614,8 @@ contains
          plus_mw => characterization%plus_mw, &
          carbon_number_plus => characterization%carbon_number_plus, &
          plus6_density => characterization%plus6_density, &
-         C => characterization%C &
+         C => characterization%C, &
+         scn_nc_new => characterization%scn_nc_new &
       )
       
       last_C = fluid%scn(fluid%scn_nc)    !19
@@ -715,14 +716,14 @@ contains
       density_ps = [density_ps, (sum_zm_last_ps)/sum((z_m_plus_i(i+1:i_last)) / (plus6_density(scn_nc_new+i+1:last)))]
       j_ps(numbers_ps) = i_last - sum(j_ps(1: numbers_ps-1)) !! revisar manana
 
-      do i = 1, numbers_ps
-         print*, 'ps',i, plus_z_ps(i), plus_mw_ps(i), density_ps(i), j_ps(i), carbon_number_plus(scn_nc_new+i)
-      end do
+      !do i = 1, numbers_ps
+      !   print*, 'ps',i, plus_z_ps(i), plus_mw_ps(i), density_ps(i), j_ps(i), carbon_number_plus(scn_nc_new+i)
+      !end do
 
       plus_density = plus_zm / sum(plus_z_ps(1:numbers_ps)* &
                      plus_mw_ps(1:numbers_ps)/(density_ps(1:numbers_ps)))
                    
-      moles = [moles, (fluid%def_comp_w)/(fluid%def_comp_mw)]
+      moles = [(fluid%def_comp_w)/(fluid%def_comp_mw)]
       moles = [moles, fluid%w(def_nc+1:def_nc+scn_nc_new)/ scn_mw(1:scn_nc_new)]
       moles = [moles, w_ps/plus_mw_ps ]
       
@@ -792,14 +793,91 @@ contains
       modified_c = c0 - m_funtion
       om = (-b + sqrt(b**2 - 4*a*modified_c))/(2*a)
       
-      do i = 1, size(mw)  
-         print*, mw(i), rho(i), tc(i), pc(i), om(i), m_funtion(i)
-      end do 
+      !do i = 1, size(mw)  
+      !   print*, mw(i), rho(i), tc(i), pc(i), om(i), m_funtion(i)
+      !end do 
+
+      characterization%critical_temperature = tc
+      characterization%critical_pressure = pc
+      characterization%acentric_factor = om
+      characterization%m_funtion = m_funtion
 
       end associate
 
    end subroutine get_critical_constants
 
+
+
+   
+   subroutine write_result(fluid,characterization)
+      use ftools__io, only: str
+      use critical_parameters
+
+      implicit none
+      type(FluidData), intent(in) :: fluid
+      type(FluidDataOut), intent(inout) :: characterization
+      integer :: i, i_prev
+      character(len=*), parameter :: str_fmt_1 = "(A4,7(A15,2x))"
+      character(len=*), parameter :: num_fmt_1 = "(A3,1x,*(E15.5,2x))"
+      character(len=*), parameter :: num_fmt_2 = "(A3,1x,*(E15.5,2x))" 
+    
+      associate(&
+         def_nc => fluid%def_comp_nc, &
+         def_name => fluid%def_components, &
+         def_mw => fluid%def_comp_mw, &
+         z => characterization%mol_fraction, &
+         mw => characterization%lumped_mw, &
+         rho => characterization%lumped_densities, &
+         scn => fluid%scn, &
+         scn_nc_new => characterization%scn_nc_new, &
+         tc => characterization%critical_temperature, &
+         pc => characterization%critical_pressure, &
+         omega => characterization%acentric_factor, &
+         m_funtion => characterization%m_funtion &
+      )
+
+      print*, "----------------------------------------------------------------"
+      print*, "Best feasible regresion parameters"
+      print*, ""
+      print*, "Init_BFR:", characterization%n_init
+      print*, "A:", characterization%a,"      ","B:", characterization%b
+      print*, "C:", characterization%C
+      print*, "MW+:", characterization%plus_mw
+      print*, "Cmax:", characterization%c_max
+      print*, ""
+      print*, "Density funtion parameters parameters"
+      print*, ""
+      print*, "ad:", characterization%a_d,"      ","bd:", characterization%b_d
+      print*, "----------------------------------------------------------------"
+      print*, ""
+      print*, "compositional result"
+      print*, ""
+      
+
+      write(*, fmt=str_fmt_1) "Comp", "Z", "Mw",  "Tc", "Pc", "Omega", "Rho", "M"  
+      ! defined components
+      do i = 1, def_nc
+         write(*, fmt=num_fmt_1) def_name(i), z(i), def_mw(i), tc_def(i), pc_def(i), om_def(i)
+      end do
+      !
+      i_prev = scn(1) - 1
+      do i = 1, scn_nc_new
+         write(*, fmt=num_fmt_2)  'C' // str(i_prev + i), z(i+def_nc), mw(i), tc(i), pc(i), omega(i), rho(i), m_funtion(i)
+      end do
+      !
+      do i = 1 + scn_nc_new, size(mw)
+         write(*, fmt=num_fmt_2)  'ps' // str(i - scn_nc_new), z(i+def_nc), mw(i), rho(i), tc(i), pc(i), omega(i), m_funtion(i)
+      end do
+
+      end associate
+   end subroutine write_result
+
+
+
+
+
+
+   
    type(FluidDataOut) function characterize(file, mw_source, method, fix_C, eos) &
          result(characterization)
 
@@ -809,6 +887,7 @@ contains
       character(len=*), intent(in) :: mw_source
       logical, intent(in), optional :: fix_C
       character(len=*), intent(in) :: eos
+      
 
 
       fluid = data_from_file(file)
@@ -834,6 +913,7 @@ contains
       call density_funtion(fluid=fluid, mw_source=mw_source, characterization=characterization)
       call lump(fluid=fluid, characterization=characterization)
       call get_critical_constants(fluid= fluid, characterization=characterization, eos=eos)
+      call write_result(fluid=fluid,characterization=characterization)
 
    end function characterize
 

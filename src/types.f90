@@ -61,6 +61,7 @@ module dtypes
       integer :: last_C
       integer :: i_last
       integer :: last
+      integer :: scn_nc_new 
       real(pr), allocatable :: scn_i(:)
       real(pr), allocatable :: plus6_density(:)
       real(pr) :: plus_w
@@ -73,6 +74,7 @@ module dtypes
       real(pr), allocatable :: critical_pressure(:)
       real(pr), allocatable :: acentric_factor(:)
       real(pr), allocatable :: m_funtion (:)
+      
    end type FluidDataOut
 
    
