@@ -1,6 +1,6 @@
 module critical_parameters
    use constants
-   use dtypes, only: FluidData
+   
 
    implicit none
    

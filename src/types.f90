@@ -7,20 +7,20 @@ module dtypes
       integer :: scn_nc !! number of single cuts being considered in the oil
       integer :: scn_nc_ps !! CN from which all SCN fractions will be lumped into the specified number of pseudos
       integer :: numbers_ps !! number of pseudos in which the scn fractions grouped.
-      character(len=:), allocatable :: filename 
-      integer, allocatable :: scn (:) !! set of singles cuts being considered in the oil 
-      character(len=15), allocatable :: def_components (:) !! set of defined components being considered in the oil  
-      character(len=15) :: scn_plus !! name of residual fraction 
-      real(pr), allocatable :: def_comp_z(:) !! set of corresponding mole fractions of defined components 
-      real(pr), allocatable :: scn_z(:) !!  set of corresponding mole fractions of scn cuts 
-      real(pr), allocatable :: def_comp_mw(:) !! set of corresponding molecular weights of defined components 
+      character(len=:), allocatable :: filename
+      integer, allocatable :: scn (:) !! set of singles cuts being considered in the oil
+      character(len=15), allocatable :: def_components (:) !! set of defined components being considered in the oil
+      character(len=15) :: scn_plus !! name of residual fraction
+      real(pr), allocatable :: def_comp_z(:) !! set of corresponding mole fractions of defined components
+      real(pr), allocatable :: scn_z(:) !!  set of corresponding mole fractions of scn cuts
+      real(pr), allocatable :: def_comp_mw(:) !! set of corresponding molecular weights of defined components
       real(pr), allocatable :: scn_mw(:) !! set of corresponding molecular weights of scn cuts
       real(pr), allocatable:: product_z_mw_def_comp(:) !! product between composition and molecular weight of defind components
       real(pr), allocatable:: product_z_mw_scn(:) !! product between composition and molecular weight of scn fractions
       real(pr) :: sum_z_mw_i !!  sum of the product between composition and molecular weight of the fluid's compounds
       real(pr), allocatable :: w(:) !! mass fractions of the fluid's compounds
       real(pr) :: plus_z !! composition of residual fraction
-      real(pr) :: plus_mw !!  molecular weight of residual fraction 
+      real(pr) :: plus_mw !!  molecular weight of residual fraction
       real(pr) :: product_z_mw_plus !! product between composition and molecular weight of residual fraction
       real(pr), allocatable :: def_comp_w(:) !! mass fractions of the defined compounds
       real(pr), allocatable :: scn_w(:) !! !! mass fractions of the scn-s compounds
@@ -31,6 +31,7 @@ module dtypes
 
    type :: FluidDataOut
       ! incluir aqui las variables que quiero que salgan como salida
+      type(FluidData) :: input_data
       real(pr), allocatable :: scn_z(:) !!  set of corresponding mole fractions of scn cuts calculated
       real(pr), allocatable :: log_scn_z(:) !!  set of corresponding mole fractions of scn cuts calculated
       real(pr) :: plus_mw !!  molecular weight of residual fraction
@@ -61,7 +62,7 @@ module dtypes
       integer :: last_C
       integer :: i_last
       integer :: last
-      integer :: scn_nc_new 
+      integer :: scn_nc_new
       real(pr), allocatable :: scn_i(:)
       real(pr), allocatable :: plus6_density(:)
       real(pr) :: plus_w
@@ -74,10 +75,86 @@ module dtypes
       real(pr), allocatable :: critical_pressure(:)
       real(pr), allocatable :: acentric_factor(:)
       real(pr), allocatable :: m_funtion (:)
-      
+
+   contains
+      private
+      procedure, pass :: write => write_result
+      generic, public :: write (FORMATTED) => write
    end type FluidDataOut
 
-   
+contains
+
+   subroutine write_result(characterization,unit,iotype,v_list,iostat,iomsg)
+      use ftools__io, only: str
+      use critical_parameters
+
+      implicit none
+      class(FluidDataOut), intent(in) :: characterization
+      integer :: i, i_prev
+      integer, intent(in) :: unit
+      integer, intent(out) :: iostat
+      character(*), optional, intent(in) :: iotype
+      character(*), optional, intent(inout) :: iomsg
+      integer, optional, intent(in)  :: v_list(:)
+      character(len=*), parameter :: str_fmt_1 = "(A4,7(A15,2x),/)"
+      character(len=*), parameter :: num_fmt_1 = "(A3,1x,*(E15.5,2x),/)"
+      character(len=*), parameter :: num_fmt_2 = "(A3,1x,*(E15.5,2x),/)"
+
+      associate(&
+         def_nc => characterization%input_data%def_comp_nc, &
+         def_name => characterization%input_data%def_components, &
+         def_mw => characterization%input_data%def_comp_mw, &
+         z => characterization%mol_fraction, &
+         mw => characterization%lumped_mw, &
+         rho => characterization%lumped_densities, &
+         scn => characterization%input_data%scn, &
+         scn_nc_new => characterization%scn_nc_new, &
+         tc => characterization%critical_temperature, &
+         pc => characterization%critical_pressure, &
+         omega => characterization%acentric_factor, &
+         m_funtion => characterization%m_funtion &
+         )
+
+         print*, "----------------------------------------------------------------"
+         print*, "Best feasible regresion parameters"
+         print*, ""
+         print*, "Init_BFR:", characterization%n_init
+         print*, "A:", characterization%a,"      ","B:", characterization%b
+         print*, "C:", characterization%C
+         print*, "MW+:", characterization%plus_mw
+         print*, "Cmax:", characterization%c_max
+         print*, ""
+         print*, "Density funtion parameters parameters"
+         print*, ""
+         print*, "ad:", characterization%a_d,"      ","bd:", characterization%b_d
+         print*, "----------------------------------------------------------------"
+         print*, ""
+         print*, "compositional result"
+         print*, ""
+
+
+         write(unit, fmt=str_fmt_1, iostat = iostat) "Comp", "Z", "Mw",  "Tc", &
+            "Pc", "Omega", "Rho", "M"
+         ! defined components
+         do i = 1, def_nc
+            write(unit, fmt=num_fmt_1, iostat = iostat) def_name(i), z(i), &
+               def_mw(i), tc_def(i), pc_def(i), om_def(i)
+         end do
+         !
+         i_prev = scn(1) - 1
+         do i = 1, scn_nc_new
+            write(unit, fmt=num_fmt_2, iostat = iostat)  'C' // str(i_prev + i), &
+               z(i+def_nc), mw(i), tc(i), pc(i), omega(i), rho(i), m_funtion(i)
+         end do
+         !
+         do i = 1 + scn_nc_new, size(mw)
+            write(unit, fmt=num_fmt_2, iostat = iostat)  'ps' // str(i - scn_nc_new), &
+               z(i+def_nc), mw(i), rho(i), tc(i), pc(i), omega(i), m_funtion(i)
+         end do
+
+      end associate
+   end subroutine write_result
+
 
 end module dtypes
 

@@ -809,69 +809,7 @@ contains
 
 
    
-   subroutine write_result(fluid,characterization)
-      use ftools__io, only: str
-      use critical_parameters
-
-      implicit none
-      type(FluidData), intent(in) :: fluid
-      type(FluidDataOut), intent(inout) :: characterization
-      integer :: i, i_prev
-      character(len=*), parameter :: str_fmt_1 = "(A4,7(A15,2x))"
-      character(len=*), parameter :: num_fmt_1 = "(A3,1x,*(E15.5,2x))"
-      character(len=*), parameter :: num_fmt_2 = "(A3,1x,*(E15.5,2x))" 
-    
-      associate(&
-         def_nc => fluid%def_comp_nc, &
-         def_name => fluid%def_components, &
-         def_mw => fluid%def_comp_mw, &
-         z => characterization%mol_fraction, &
-         mw => characterization%lumped_mw, &
-         rho => characterization%lumped_densities, &
-         scn => fluid%scn, &
-         scn_nc_new => characterization%scn_nc_new, &
-         tc => characterization%critical_temperature, &
-         pc => characterization%critical_pressure, &
-         omega => characterization%acentric_factor, &
-         m_funtion => characterization%m_funtion &
-      )
-
-      print*, "----------------------------------------------------------------"
-      print*, "Best feasible regresion parameters"
-      print*, ""
-      print*, "Init_BFR:", characterization%n_init
-      print*, "A:", characterization%a,"      ","B:", characterization%b
-      print*, "C:", characterization%C
-      print*, "MW+:", characterization%plus_mw
-      print*, "Cmax:", characterization%c_max
-      print*, ""
-      print*, "Density funtion parameters parameters"
-      print*, ""
-      print*, "ad:", characterization%a_d,"      ","bd:", characterization%b_d
-      print*, "----------------------------------------------------------------"
-      print*, ""
-      print*, "compositional result"
-      print*, ""
-      
-
-      write(*, fmt=str_fmt_1) "Comp", "Z", "Mw",  "Tc", "Pc", "Omega", "Rho", "M"  
-      ! defined components
-      do i = 1, def_nc
-         write(*, fmt=num_fmt_1) def_name(i), z(i), def_mw(i), tc_def(i), pc_def(i), om_def(i)
-      end do
-      !
-      i_prev = scn(1) - 1
-      do i = 1, scn_nc_new
-         write(*, fmt=num_fmt_2)  'C' // str(i_prev + i), z(i+def_nc), mw(i), tc(i), pc(i), omega(i), rho(i), m_funtion(i)
-      end do
-      !
-      do i = 1 + scn_nc_new, size(mw)
-         write(*, fmt=num_fmt_2)  'ps' // str(i - scn_nc_new), z(i+def_nc), mw(i), rho(i), tc(i), pc(i), omega(i), m_funtion(i)
-      end do
-
-      end associate
-   end subroutine write_result
-
+   
 
 
 
@@ -890,7 +828,8 @@ contains
       
 
 
-      fluid = data_from_file(file)
+      fluid = data_from_file(file)    
+      characterization%input_data = fluid
       allocate(characterization%scn_z(fluid%scn_nc))
       allocate(characterization%log_scn_z(fluid%scn_nc))
       allocate(characterization%scn_mw(fluid%scn_nc))
@@ -908,12 +847,13 @@ contains
       allocate(characterization%critical_pressure(0))
       allocate(characterization%acentric_factor(0))
       allocate(characterization%m_funtion(0))
+    
 
       call get_c_or_m_plus(fluid=fluid, mw_source=mw_source, method=method, fix_C=fix_C, characterization= characterization)
       call density_funtion(fluid=fluid, mw_source=mw_source, characterization=characterization)
       call lump(fluid=fluid, characterization=characterization)
       call get_critical_constants(fluid= fluid, characterization=characterization, eos=eos)
-      call write_result(fluid=fluid,characterization=characterization)
+      
 
    end function characterize
 
