@@ -806,16 +806,6 @@ contains
 
    end subroutine get_critical_constants
 
-
-
-   
-   
-
-
-
-
-
-   
    type(FluidDataOut) function characterize(file, mw_source, method, fix_C, eos) &
          result(characterization)
 

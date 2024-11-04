@@ -97,8 +97,9 @@ contains
       character(*), optional, intent(inout) :: iomsg
       integer, optional, intent(in)  :: v_list(:)
       character(len=*), parameter :: str_fmt_1 = "(A4,7(A15,2x),/)"
-      character(len=*), parameter :: num_fmt_1 = "(A3,1x,*(E15.5,2x),/)"
-      character(len=*), parameter :: num_fmt_2 = "(A3,1x,*(E15.5,2x),/)"
+      character(len=*), parameter :: num_fmt_1 = "(A3,1x,5(E15.5,2x),/)"
+      character(len=*), parameter :: num_fmt_2 = "(A3,1x,7(E15.5,2x),/)"
+      character(len=*), parameter :: str_fmt_2 = "(130('-'),/),/)"
 
       associate(&
          def_nc => characterization%input_data%def_comp_nc, &
@@ -115,22 +116,30 @@ contains
          m_funtion => characterization%m_funtion &
          )
 
-         print*, "----------------------------------------------------------------"
-         print*, "Best feasible regresion parameters"
-         print*, ""
-         print*, "Init_BFR:", characterization%n_init
-         print*, "A:", characterization%a,"      ","B:", characterization%b
-         print*, "C:", characterization%C
-         print*, "MW+:", characterization%plus_mw
-         print*, "Cmax:", characterization%c_max
-         print*, ""
-         print*, "Density funtion parameters parameters"
-         print*, ""
-         print*, "ad:", characterization%a_d,"      ","bd:", characterization%b_d
-         print*, "----------------------------------------------------------------"
-         print*, ""
-         print*, "compositional result"
-         print*, ""
+
+
+         write(unit, fmt=str_fmt_2, iostat = iostat)                                                                        
+         !write(*,"(A64,/)") "----------------------------------------------------------------" 
+         !write(*,*) "Best feasible regresion parameters"
+         !write(unit, fmt=str_fmt_1, iostat = iostat) ""
+         !write(unit, fmt=num_fmt_2, iostat = iostat) "Init_BFR:", characterization%n_init
+         !write(*,*) "A:", characterization%a,"      ","B:", characterization%b
+         !write(*,*) "C:", characterization%C
+         !write(*,*) "MW+:", characterization%plus_mw
+         !write(*,*) "Cmax:", characterization%c_max
+         !write(*,*) ""
+         !write(*,*) "Density funtion parameters parameters"
+         !write(*,*) ""
+         !write(*,*) "ad:", characterization%a_d,"      ","bd:", characterization%b_d
+         !write(*,*) "----------------------------------------------------------------"
+         !write(*,*) ""
+         !write(*,*) "compositional result"
+         !write(*,*) ""
+
+
+
+
+
 
 
          write(unit, fmt=str_fmt_1, iostat = iostat) "Comp", "Z", "Mw",  "Tc", &
@@ -143,7 +152,7 @@ contains
          !
          i_prev = scn(1) - 1
          do i = 1, scn_nc_new
-            write(unit, fmt=num_fmt_2, iostat = iostat)  'C' // str(i_prev + i), &
+            write(unit, fmt=num_fmt_2, iostat = iostat)  adjustl('C' // str(i_prev + i)), &
                z(i+def_nc), mw(i), tc(i), pc(i), omega(i), rho(i), m_funtion(i)
          end do
          !
