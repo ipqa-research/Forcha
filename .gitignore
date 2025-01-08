@@ -88,10 +88,6 @@ fig77
 fpm.toml
 src/tools/ftools__io.mod
 YPF1.nml
-YPF2.nml
-YPF1.nml
-YPF1.nml
-fpm.toml
 fpm.toml
 src/molecular_weigth/molecular_weigth.mod
 .gitignore
