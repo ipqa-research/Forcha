@@ -7,6 +7,8 @@ module dtypes
       integer :: scn_nc !! number of single cuts being considered in the oil
       integer :: scn_nc_ps !! CN from which all SCN fractions will be lumped into the specified number of pseudos
       integer :: numbers_ps !! number of pseudos in which the scn fractions grouped.
+      logical :: density_setup
+      integer :: number_plus_density
       character(len=:), allocatable :: filename
       integer, allocatable :: scn (:) !! set of singles cuts being considered in the oil
       character(len=15), allocatable :: def_components (:) !! set of defined components being considered in the oil
@@ -20,13 +22,26 @@ module dtypes
       real(pr) :: sum_z_mw_i !!  sum of the product between composition and molecular weight of the fluid's compounds
       real(pr), allocatable :: w(:) !! mass fractions of the fluid's compounds
       real(pr) :: plus_z !! composition of residual fraction
+      real(pr) :: plus6_z_exp !! composition of residual fraction
+      real(pr) :: plus7_z_exp !! composition of residual fraction
+      real(pr) :: plus12_z_exp !! composition of residual fraction
+      real(pr) :: plus30_z_exp !! composition of residual fraction
       real(pr) :: plus_mw !!  molecular weight of residual fraction
+      real(pr) :: plus6_mw_exp !!  molecular weight of residual fraction
+      real(pr) :: plus7_mw_exp !!  molecular weight of residual fraction
+      real(pr) :: plus12_mw_exp !!  molecular weight of residual fraction
+      real(pr) :: plus30_mw_exp !!  molecular weight of residual fraction
       real(pr) :: product_z_mw_plus !! product between composition and molecular weight of residual fraction
       real(pr), allocatable :: def_comp_w(:) !! mass fractions of the defined compounds
       real(pr), allocatable :: scn_w(:) !! !! mass fractions of the scn-s compounds
       real(pr) :: plus_w !! mass fractions of the plus fraction
       real(pr), allocatable :: scn_density(:) !! set of corresponding densities of scn cuts
       real(pr) :: plus_density !! experimental density of the plus fraction
+      real(pr) :: plus6_density_exp
+      real(pr) :: plus7_density_exp
+      real(pr) :: plus12_density_exp
+      real(pr) :: plus30_density_exp
+      
    end type FluidData
 
    type :: FluidDataOut
@@ -58,7 +73,8 @@ module dtypes
       real(pr), allocatable  :: product_z_mw_plus_i(:)
       real(pr) :: a_d !! ad constant which is used in equation \[rho_i = ad*exp(-i/10) +bd\] for density.
       real(pr) :: b_d !! bd constant which is used in equation \[rho_i = ad*exp(-i/10) +bd\] for density.
-      real(pr) :: volume_6plus_cal
+      real(pr) :: volume_cal
+      real(pr) :: volume_exp
       integer :: last_C
       integer :: i_last
       integer :: last
@@ -86,7 +102,7 @@ contains
 
    subroutine write_result(characterization,unit,iotype,v_list,iostat,iomsg)
       use ftools__io, only: str
-      use critical_parameters
+      use defined_critical_parameters
 
       implicit none
       class(FluidDataOut), intent(in) :: characterization

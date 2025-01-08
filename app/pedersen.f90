@@ -60,11 +60,11 @@ program oscar
    real(pr) :: x(2), F
    type(ExpData) :: exp
 
-   exp%zplus = [0.2133]
-   exp%mplus = [442.1]
+   exp%zplus = [0.1107]
+   exp%mplus = [419.3]
 
    ! Initial guess
-   x = [0, 0]
+   x = [   -9.3214408744470914E-002,  -2.7557414112453325  ]
 
    ! Minimize uses the Nelder-Mead algorithm as a default
    call minimize(foo, x, F, data=exp)
