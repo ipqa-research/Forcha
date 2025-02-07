@@ -1,6 +1,6 @@
 ! Namelist based input file
 ! ==============================================================================
-!  - YPF2
+!  - PVT4 from whitson dataset
 !  - Composition: molar
 !  - Molecular Weights: g/mol
 !  - Density: g/cm3
@@ -9,70 +9,64 @@
 &nml_setup
     def_comp_nc = 9 
         ! number of defined components before scn
-    scn_nc = 14 
+    scn_nc = 24 
         ! number of single carbon number components  
-    scn_nc_ps = 20
+    scn_nc_ps = 30
         ! CN from which all SCN fractions will be lumped into the specified number of pseudos
     numbers_ps = 5
         ! number of pseudos in which the scn fractions grouped
-    density_setup = .true.
-        ! Logical variable to choose the density calculation method
-    number_plus_density = 6
-        ! CN from which we considered .......
 /
 &nml_components
     def_components = "N2" "CO2" "C1" "C2" "C3" "iC4" "nC4" "iC5" "nC5"  
         ! names of defined components before scn
-    scn = 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+    scn = 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 
         ! names of scn fractions
-    scn_plus= "C20+"
+    scn_plus= "C30+"
         ! name of plus fraction
 /
 &nml_composition
-    def_comp_z = 0.00005 0.01963 0.06271 0.00707 0.01354 0.0045	0.01607	0.01069	0.01562
+    def_comp_z = 0.0054 0.0023 0.7261 0.1179 0.0532 0.0112	0.0176	0.011	0.0074
         ! compositions of defined components 
-    scn_z = 0.03374	0.06051	0.08007	0.06365	0.05495	0.03993	0.03139	0.03392	0.03133	0.03183	0.03042	0.02984	0.03127	0.02964
+    scn_z = 0.00978 0.00778 0.01038	0.00559	0.00369	0.00249	0.0017	0.0016	0.0011	0.0009	0.0006	0.0005	0.0004	0.0003 0.00021 0.00016 0.00013 0.0001 0.00008 0.00007 0.00005 0.00004 0.00003 0.00003
         ! compositions of single carbon numbers
-    plus_z = 0.26762   
+    plus_z = 0.0002   
         ! composition of residual fraction CN 20 plus
-    plus6_z_exp = 0.26762   
+    plus6_z_exp = 0.0478   
         ! composition of residual fraction CN 6 plus
-    plus7_z_exp = 0.26762   
+    plus7_z_exp = 0.0381   
         ! composition of residual fraction CN 7 plus
-    plus12_z_exp = 0.26762   
+    plus12_z_exp = 0.0082   
         ! composition of residual fraction CN 12 plus
-    plus30_z_exp = 0.26762   
+    plus30_z_exp = 0.0002   
         ! composition of residual fraction CN 30 plus
 /
 &nml_molecular_weight
-    def_comp_mw = 28.01 44.01 16 30.1 44.1 58.1 58.1 72.1 72.1   
+    def_comp_mw = 28.01 44.01 16 30.1 44.1 58.1 58.1 72.2 72.2   
         ! molecular weights of defined components 
-    scn_mw = 84	96 107 121 134 147 161 175 190 206 222 237 251 263
+    scn_mw = 85.71	96.64 108.98 124.03 137.52 145.38 161.53 169.94 186.01 197.43 233.32 242.3 255.76 269.22 279.99 294.34 308.69 323.04 337.39 351.74 366.08 380.43 394.78 409.13
         ! molecular weights of single carbon numbers
-    plus_mw = 543.35 
+    plus_mw = 551.2 
         ! molecular weight of residual fraction CN 20 plus
-    plus6_mw_exp = 465 
+    plus6_mw_exp = 126.64 
         ! molecular weight of residual fraction CN 6 plus
-    plus7_mw_exp = 500
+    plus7_mw_exp = 134.38
         ! molecular weight of residual fraction CN 7 plus
-    plus12_mw_exp = 600
+    plus12_mw_exp = 217.35
         ! molecular weight of residual fraction CN 12 plus
-    plus30_mw_exp = 700
+    plus30_mw_exp = 551.2
         ! molecular weight of residual fraction CN 30 plus
 /
 &nml_density   
-    scn_density = 0.685 0.749 0.768 0.793 0.808 0.815 0.836 0.85 0.861 0.873 0.882 0.873 0.875 0.885
+    scn_density = 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
         ! density of single carbon numbers
-    plus_density = 0.936 
+    plus_density = 0.9804 
         ! density of residual fraction CN 20 plus
-    plus6_density_exp = 0.77
+    plus6_density_exp = 0.7728
         ! density of residual fraction CN 6 plus
-    plus7_density_exp = 0.77
+    plus7_density_exp = 0.7889
         ! density of residual fraction CN 7 plus
-    plus12_density_exp = 0.77
+    plus12_density_exp = 0.8414
         ! density of residual fraction CN 12 plus
-    plus30_density_exp = 0.77
+    plus30_density_exp = 0.9804
         ! density of residual fraction CN 30 plus
 /
-
-

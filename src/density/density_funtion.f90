@@ -66,7 +66,7 @@ contains
       integer, intent(in) :: pho_method
       real(pr) :: volume_exp
 
-      select case (pho_method) 
+      select case (pho_method) ! cambiar a rho
 
       case (1)
          ! case 1 use experimental scn's densities reported to calculate 
