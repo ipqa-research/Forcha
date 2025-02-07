@@ -42,18 +42,22 @@ contains
       close(funit)
    end subroutine read_components
 
-   subroutine read_composition(file, def_comp_z, scn_z, plus_z)
+   subroutine read_composition(file, def_comp_z, scn_z, plus_z, plus6_z_exp, plus7_z_exp, plus12_z_exp, plus30_z_exp )
       !! Reads the molar compositions of each component from input file
       character(len=*), intent(in) :: file !! file name
       real(pr), allocatable, intent(out) :: def_comp_z(:) !! set of corresponding mole fractions of defined components
       real(pr), allocatable, intent(out) :: scn_z(:) !! set of corresponding mole fractions of scn cuts
       real(pr), intent(out):: plus_z !! composition of residual fraction from input file
+      real(pr), intent(out):: plus6_z_exp !! composition of residual fraction from input file
+      real(pr), intent(out):: plus7_z_exp !! composition of residual fraction from input file
+      real(pr), intent(out):: plus12_z_exp !! composition of residual fraction from input file
+      real(pr), intent(out):: plus30_z_exp !! composition of residual fraction from input file
       integer :: def_comp_nc !! number of defined components being considered in the oil
       integer :: scn_nc !! number of single cuts being considered in the oil
       integer :: scn_nc_ps !! CN from which all SCN fractions will be lumped into the specified number of pseudos
       integer :: numbers_ps !! number of pseudos in which the scn fractions grouped
       integer :: funit
-      namelist /nml_composition/ def_comp_z, scn_z, plus_z
+      namelist /nml_composition/ def_comp_z, scn_z, plus_z, plus6_z_exp, plus7_z_exp, plus12_z_exp, plus30_z_exp
 
       call read_setup(file, def_comp_nc, scn_nc, scn_nc_ps, numbers_ps)
       allocate(def_comp_z(def_comp_nc))
@@ -64,18 +68,22 @@ contains
       close(funit)
    end subroutine read_composition
 
-   subroutine read_molecular_weight(file, def_comp_mw, scn_mw, plus_mw)
+   subroutine read_molecular_weight(file, def_comp_mw, scn_mw, plus_mw, plus6_mw_exp, plus7_mw_exp, plus12_mw_exp, plus30_mw_exp)
       !! Reads the molecular weights of each component from the input file
       character(len=*), intent(in) :: file !! file name
       real(pr), allocatable, intent(out) :: def_comp_mw(:) !! set of corresponding molecular weights of defined components
       real(pr), allocatable, intent(out) :: scn_mw(:) !! set of corresponding molecular weights of scn cuts
       real(pr), intent(out) :: plus_mw !!  molecular weight of residual fraction
+      real(pr), intent(out) :: plus6_mw_exp !!  molecular weight of residual fraction
+      real(pr), intent(out) :: plus7_mw_exp !!  molecular weight of residual fraction
+      real(pr), intent(out) :: plus12_mw_exp !!  molecular weight of residual fraction
+      real(pr), intent(out) :: plus30_mw_exp !!  molecular weight of residual fraction
       integer :: def_comp_nc !! number of defined components being considered in the oil
       integer :: scn_nc !! number of single cuts being considered in the oil
       integer :: scn_nc_ps !! CN from which all SCN fractions will be lumped into the specified number of pseudos
       integer :: numbers_ps !! number of pseudos in which the scn fractions grouped
       integer :: funit
-      namelist /nml_molecular_weight/ def_comp_mw, scn_mw, plus_mw
+      namelist /nml_molecular_weight/ def_comp_mw, scn_mw, plus_mw, plus6_mw_exp, plus7_mw_exp, plus12_mw_exp, plus30_mw_exp
 
       call read_setup(file, def_comp_nc, scn_nc, scn_nc_ps, numbers_ps)
       allocate(def_comp_mw(def_comp_nc))
@@ -104,9 +112,17 @@ contains
       real(pr), allocatable :: def_comp_z(:) !! set of corresponding mole fractions of defined components
       real(pr), allocatable :: scn_z(:) !! set of corresponding mole fractions of scn cuts
       real(pr) :: plus_z !! composition of residual fraction
+      real(pr) :: plus6_z_exp !! composition of residual fraction from input file
+      real(pr) :: plus7_z_exp !! composition of residual fraction from input file
+      real(pr) :: plus12_z_exp !! composition of residual fraction from input file
+      real(pr) :: plus30_z_exp !! composition of residual fraction from input file
       real(pr), allocatable :: def_comp_mw(:) !! set of corresponding molecular weights of defined components
       real(pr), allocatable  :: scn_mw(:) !! set of corresponding molecular weights of scn cuts
       real(pr) :: plus_mw !!  molecular weight of residual fraction
+      real(pr) :: plus6_mw_exp !!  molecular weight of residual fraction
+      real(pr) :: plus7_mw_exp !!  molecular weight of residual fraction
+      real(pr) :: plus12_mw_exp !!  molecular weight of residual fraction
+      real(pr) :: plus30_mw_exp !!  molecular weight of residual fraction
       real(pr), allocatable :: product_z_mw_i(:)
       real(pr), allocatable, intent(out) :: def_comp_w(:)
       real(pr), allocatable, intent(out) :: scn_w(:)
@@ -124,8 +140,12 @@ contains
       allocate(def_comp_w(def_comp_nc))
       allocate(scn_w(scn_nc))
 
-      call read_composition(file, def_comp_z, scn_z, plus_z)
-      call read_molecular_weight(file, def_comp_mw, scn_mw, plus_mw)
+      call read_composition(file, def_comp_z, scn_z, plus_z, plus6_z_exp, &
+          plus7_z_exp, plus12_z_exp, plus30_z_exp &
+         )
+      call read_molecular_weight(file, def_comp_mw, scn_mw, plus_mw, &
+         plus6_mw_exp, plus7_mw_exp, plus12_mw_exp, plus30_mw_exp &
+         )
 
       product_z_mw_def_comp = (def_comp_z)*(def_comp_mw)
       product_z_mw_scn = (scn_z)*(scn_mw)
@@ -138,21 +158,27 @@ contains
       plus_w = w(def_comp_nc+scn_nc+1)
    end subroutine mass_fractions
 
-   subroutine read_density(file,scn_density,plus_density)
+   subroutine read_density(file,scn_density,plus_density, plus6_density_exp, &
+      plus7_density_exp, plus12_density_exp, plus30_density_exp &
+      )
       !! Reads the density of each component from the input file and calculated molar volume since C6 fraction.
       character(len=*), intent(in) :: file !! file name
       real(pr), allocatable, intent(out) :: scn_density(:) !! set of corresponding densities of scn cuts
       real(pr), intent(out):: plus_density !! density of residual fraction from input file
+      real(pr), intent(out):: plus6_density_exp
+      real(pr), intent(out):: plus7_density_exp
+      real(pr), intent(out):: plus12_density_exp
+      real(pr), intent(out):: plus30_density_exp
       integer :: def_comp_nc !! number of defined components being considered in the oil
       integer :: scn_nc !! number of single cuts being considered in the oil
       integer :: scn_nc_ps !! CN from which all SCN fractions will be lumped into the specified number of pseudos
       integer :: numbers_ps !! number of pseudos in which the scn fractions grouped
       integer :: funit
-      namelist /nml_density/ scn_density, plus_density
-      
+      namelist /nml_density/ scn_density, plus_density, plus6_density_exp, plus7_density_exp, plus12_density_exp, plus30_density_exp
+
       call read_setup(file, def_comp_nc, scn_nc, scn_nc_ps, numbers_ps)
       allocate(scn_density(scn_nc))
-      
+
       open(newunit=funit, file=file)
       read(funit, nml=nml_density)
       close(funit)
@@ -162,22 +188,31 @@ contains
    type(FluidData) function data_from_file(file) result(data)
       !! This funtion allows to obtain experimental data from data imput
       character(len=*), intent(in) :: file !! file name
-      
+
       data%filename = file
-      
-      call read_setup(file, data%def_comp_nc, data%scn_nc, data%scn_nc_ps, data%numbers_ps)
-      call read_components(file, data%def_components, data%scn, &
-         data%scn_plus)
-      call read_composition(file, data%def_comp_z, data%scn_z, data%plus_z)
+
+      call read_setup(file, data%def_comp_nc, data%scn_nc, data%scn_nc_ps, &
+         data%numbers_ps &
+         )
+      call read_components(file, data%def_components, data%scn, data%scn_plus)
+      call read_composition(file, data%def_comp_z, data%scn_z, data%plus_z, &
+         data%plus6_z_exp, data%plus7_z_exp, data%plus12_z_exp, data%plus30_z_exp &
+         )
       call read_molecular_weight(file, data%def_comp_mw, data%scn_mw, &
-         data%plus_mw)
+         data%plus_mw, data%plus6_mw_exp, data%plus7_mw_exp, data%plus12_mw_exp, &
+         data%plus30_mw_exp &
+         )
       call mass_fractions(file, data%w, data%product_z_mw_def_comp, &
          data%product_z_mw_scn, data%sum_z_mw_i, data%product_z_mw_plus, &
-         data%def_comp_w, data%scn_w, data%plus_w)
-      call read_density(file, data%scn_density, data%plus_density)
-  
+         data%def_comp_w, data%scn_w, data%plus_w &
+         )
+      call read_density(file, data%scn_density, data%plus_density, &
+         data%plus6_density_exp, data%plus7_density_exp, data%plus12_density_exp, &
+         data%plus30_density_exp &
+         )
+
    end function data_from_file
-   
+
 
 end module data_from_input
 

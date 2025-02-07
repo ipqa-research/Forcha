@@ -1,21 +1,23 @@
 program main
 
-   use data_from_input, only: data_from_file, FluidData 
-   use routines
+   !use data_from_input, only: data_from_file, FluidData 
+   use characterization
 
    implicit none
-   integer ::  k, i
-   type(FluidDataOut) :: prueba
-   type(FluidData) :: fluid
-   
 
-   prueba = characterize(file='oil1.nml', mw_source="calculated", method = "plus_mw", fix_C=.true.)
-   print*, prueba%n_init
-   print*, prueba%a , prueba%b
-   print*, prueba%C, prueba%plus_mw
-   print*, prueba%a_d, prueba%b_d
-   print*, "-------------------------------------------------------------------"
-   print*, prueba%nc_plus
+   type(FluidDataOut) :: prueba
+   integer :: i
+   
+   prueba = characterize(file='PVT5.nml', mw_source="experimental", method = "plus_mw", pho_method = 3 , fix_C=.true., eos='PR')
+   write(*, *) prueba
+   print*, prueba%C, prueba%a, prueba%b, prueba%plus_mw, prueba%plus_z
+   print*, prueba%c_max
+   
+   !print*, prueba%a ,  prueba%b , prueba%n_init, prueba%input_data%number_plus_density
+   !do i = 1, size(prueba%mol_fraction)
+   !   print*, prueba%mol_fraction(i)
+   !end do
+
 end program main
 
 

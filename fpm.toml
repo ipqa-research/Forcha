@@ -15,3 +15,5 @@ library = false
 implicit-typing = false
 implicit-external = false
 source-form = "free"
+[dependencies]
+ForTimize = {git='https://github.com/fedebenelli/ForTimize'}
