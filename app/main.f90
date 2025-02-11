@@ -1,23 +1,20 @@
 program main
 
-   !use data_from_input, only: data_from_file, FluidData 
    use characterization
 
    implicit none
 
-   type(FluidDataOut) :: prueba
-   integer :: i
+   type(FluidDataOut) :: fluid_to_characterize
    
-   prueba = characterize(file='PVT5.nml', mw_source="experimental", method = "plus_mw", pho_method = 3 , fix_C=.true., eos='PR')
-   write(*, *) prueba
-   print*, prueba%C, prueba%a, prueba%b, prueba%plus_mw, prueba%plus_z
-   print*, prueba%c_max
-   
-   !print*, prueba%a ,  prueba%b , prueba%n_init, prueba%input_data%number_plus_density
-   !do i = 1, size(prueba%mol_fraction)
-   !   print*, prueba%mol_fraction(i)
-   !end do
+   fluid_to_characterize=characterize(file='YPF2.nml',mw_source="experimental",&
+         method = "plus_mw", pho_method = 1 , fix_C=.true., eos='PR')
+      
+   write(*, *) fluid_to_characterize
 
+   print*, fluid_to_characterize%C, fluid_to_characterize%a, fluid_to_characterize%b, &
+           fluid_to_characterize%plus_mw, fluid_to_characterize%plus_z
+   print*, fluid_to_characterize%c_max
+   
 end program main
 
 
