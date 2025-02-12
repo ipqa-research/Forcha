@@ -3,7 +3,7 @@ module data_from_input
    !! an input file and organize it into a data structure.
    use dtypes, only: FluidData
    ! The FluidData type is imported, which stores all the fluid information.
-   use constants, only: pr 
+   use constants, only: pr
    ! Pr precision is used to define floating point variables.
 
    implicit none
@@ -36,7 +36,7 @@ contains
    subroutine read_components(file, def_components, scn, scn_plus)
       !! This subroutine reads the component names from input file
 
-      character(len=*), intent(in) :: file 
+      character(len=*), intent(in) :: file
       !! File name of fluid to characterize
       character(len=15), allocatable, intent(out) :: def_components(:)
       !! Names of defined components
@@ -69,7 +69,7 @@ contains
       !! This subroutine reads the molar compositions of each component
       !! from input file
 
-      character(len=*), intent(in) :: file 
+      character(len=*), intent(in) :: file
       !! File name of fluid to characterize
       real(pr), allocatable, intent(out) :: def_comp_z(:)
       !! Set of corresponding mole fractions of defined components
@@ -134,7 +134,7 @@ contains
       integer :: scn_nc_ps
       !! CN from which all SCN fractions will be lumped into the specified
       !! number of pseudos
-      integer :: numbers_ps 
+      integer :: numbers_ps
       !! Number of pseudos in which the scn fractions grouped
       integer :: funit
 
@@ -213,7 +213,7 @@ contains
       !! molecular weight of residual fraction
       !! C30+ is considered the residual fraction
       real(pr), allocatable :: product_z_mw_i(:)
-      ! product of mole fraction and molecular weight of each 
+      ! product of mole fraction and molecular weight of each
       ! component of the fluid
       real(pr), allocatable, intent(out) :: def_comp_w(:)
       !! mass fractions of defined components
@@ -244,7 +244,8 @@ contains
       product_z_mw_def_comp = (def_comp_z)*(def_comp_mw)
       product_z_mw_scn = (scn_z)*(scn_mw)
       product_z_mw_plus = (plus_z)*(plus_mw)
-      product_z_mw_i = [product_z_mw_def_comp, product_z_mw_scn, product_z_mw_plus]
+      product_z_mw_i = [product_z_mw_def_comp, product_z_mw_scn, &
+         product_z_mw_plus]
       sum_z_mw_i = sum(product_z_mw_i)
       w = (product_z_mw_i) / (sum_z_mw_i)
       def_comp_w = w(1:def_comp_nc)
@@ -254,31 +255,34 @@ contains
    end subroutine mass_fractions
 
    subroutine read_density(file,scn_density,plus_density, plus6_density_exp, &
-      plus7_density_exp, plus12_density_exp, plus30_density_exp &
-      )
-      !! This subroutine reads the density of each component from the input 
-      !! file and calculated molar volume since C6 fraction.
+      plus7_density_exp, plus12_density_exp, plus30_density_exp)
+      !! Reads the density of each component from the input file and calculated
+      !! molar volume since C6 fraction.
 
-      character(len=*), intent(in) :: file !! file name
-      real(pr), allocatable, intent(out) :: scn_density(:) 
+      character(len=*), intent(in) :: file !! File name
+      real(pr), allocatable, intent(out) :: scn_density(:)
       !! Set of corresponding densities of scn cuts
-      real(pr), intent(out):: plus_density 
+      real(pr), intent(out):: plus_density
       !! Density of residual fraction from input file
-      real(pr), intent(out):: plus6_density_exp !! Experimental density for C6+
-      real(pr), intent(out):: plus7_density_exp !! Experimental density for C7+
-      real(pr), intent(out):: plus12_density_exp !! Experimental density for C12+
+      real(pr), intent(out):: plus6_density_exp
+      !! Experimental density for C6+
+      real(pr), intent(out):: plus7_density_exp
+      !! Experimental density for C7+
+      real(pr), intent(out):: plus12_density_exp
+      !! Experimental density for C12+
       real(pr), intent(out):: plus30_density_exp
-      integer :: def_comp_nc 
+      !! Experimental density for C30+
+      integer :: def_comp_nc
       !! Number of defined components being considered in the oil
-      integer :: scn_nc 
+      integer :: scn_nc
       !! Number of single cuts being considered in the oil
-      integer :: scn_nc_ps 
-      !! CN from which all SCN fractions will be lumped into the specified 
+      integer :: scn_nc_ps
+      !! CN from which all SCN fractions will be lumped into the specified
       !! number of pseudos
-      integer :: numbers_ps 
-      !! Number of pseudos in which the scn fractions grouped
+      integer :: numbers_ps
+      !! number of pseudos in which the scn fractions grouped
       integer :: funit
-      
+
       namelist /nml_density/ scn_density, plus_density, plus6_density_exp, &
          plus7_density_exp, plus12_density_exp, plus30_density_exp
       ! Namelist for reading density values from the input file
@@ -286,18 +290,19 @@ contains
       call read_setup(file, def_comp_nc, scn_nc, scn_nc_ps, numbers_ps)
       allocate(scn_density(scn_nc))
 
-      open(newunit=funit, file=file) 
+      open(newunit=funit, file=file)
       ! Open the input file and read densities using the namelist
+      read(funit, nml=nml_density)
       close(funit)
 
    end subroutine read_density
 
    type(FluidData) function data_from_file(file) result(data)
-      !! This funtion allows to obtain experimental data from data imput
+      !! This funtion allows to obtain experimental data from imput file
+
       character(len=*), intent(in) :: file !! file name
 
       data%filename = file
-
       call read_setup(file, data%def_comp_nc, data%scn_nc, data%scn_nc_ps, &
          data%numbers_ps &
          )
