@@ -42,7 +42,7 @@ contains
 end module
 
 
-program oscar
+program test
    use ForTimize, only: pr, minimize
    use my_objective, only: foo, ExpData
 
@@ -62,4 +62,4 @@ program oscar
    ! Print results
    print *, x
    print *, F
-end program oscar
+end program test
