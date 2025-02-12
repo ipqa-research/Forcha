@@ -15,10 +15,6 @@
         ! CN from which all SCN fractions will be lumped into the specified number of pseudos
     numbers_ps = 5
         ! number of pseudos in which the scn fractions grouped
-    density_setup = .true.
-        ! Logical variable to choose the density calculation method
-    number_plus_density = 6
-        ! CN from which we considered .......
 /
 &nml_components
     def_components = "N2" "CO2" "C1" "C2" "C3" "iC4" "nC4" "iC5" "nC5"  
