@@ -1,11 +1,11 @@
 module my_objective1
+   !! This module used ForTimize package to optimize the parameters
+   !! for pedersen distribution funtion
    use ForTimize, only: pr
-   
-
    type :: ExpData
-      real(pr), allocatable :: x(:)
-      real(pr), allocatable :: zplus(:)
-      real(pr), allocatable :: mplus(:)
+      real(pr), allocatable :: x(:) !! Vector of parameters to optimize
+      real(pr), allocatable :: zplus(:) !! Experimental mole fraction of residual fraction
+      real(pr), allocatable :: mplus(:) !! Experimental molecular weight of residual fraction
    end type ExpData
 
 contains
@@ -20,25 +20,29 @@ contains
       class(*), optional, intent(in out) :: data
       !! Special data that the function could use.
 
-      real(pr) :: a, b
-      integer :: i
-      integer, parameter :: n = 181
-      real(pr) :: cn(n)
-      real(pr) :: z_i(n)
-      real(pr) :: m_i(n)
-      real(pr) :: zplus_cal
-      real(pr) :: mplus_cal
+      real(pr) :: a, b !! parameters of pedersen distribution funtion 
+      integer :: i !! Iteration variable
+      integer, parameter :: n = 181 !! Parameter for defined maximum carbon number
+      real(pr) :: cn(n) !! Vector of carbon numbers
+      real(pr) :: z_i(n) !! Vector of compositions of residual fraction
+      real(pr) :: m_i(n) !! Vector of molecular weights of residual fraction
+      real(pr) :: zplus_cal !! Mole fraction of plus fraction compute
+      real(pr) :: mplus_cal !! Molecular weight of plus fraction compute
 
-
+      ! compute the carbon number vector
       do i = 1, n
          cn(i) = 20.0d0 + i - 1
       end do
 
+      ! define parameters to optimizar into x vector 
       a = x(1)
       b = x(2)
       
+      ! compute mole fraction using pedersen linear funtion
       z_i = exp(a*cn+b)
+      ! compute molecular weighth using pedersen linear funtion
       m_i = 14*cn-4
+      ! Sum the values to obtain the residual value
       zplus_cal = sum(z_i)
       mplus_cal = sum(z_i*m_i)/zplus_cal
 
@@ -53,7 +57,8 @@ contains
 end module my_objective1
 
 
-program oscar
+program pedersen_characterize
+   !! This program optimizes the parameter of pedersen distribution funtion
    use ForTimize, only: pr, minimize
    use my_objective1, only: foo, ExpData
 
@@ -72,5 +77,5 @@ program oscar
    ! Print results
    print *, x
    print *, F
-   !print*, cn
-end program oscar
+   
+end program pedersen_characterize

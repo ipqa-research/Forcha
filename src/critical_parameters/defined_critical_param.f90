@@ -1,25 +1,69 @@
 module defined_critical_parameters
+   !! This module defines global arrays and coefficients used for calculating 
+   !! the critical properties of a fluid. These properties include the critical
+   !! temperature (Tc), critical pressure (Pc), and acentric factor (omega). 
+   !! The module provides default values for these properties as well as 
+   !! correlation coefficients used in Pedersen correlations and
+   !! EOS parameter calculations.
    use constants
    
    implicit none
 
-   real(pr), allocatable :: tc_def(:), pc_def(:), om_def(:)
-   real(pr):: c1, c2, c3, c4, d1_p, d2, d3, d4, d5, e1, e2, e3, e4
-   real(pr):: a, b, c0, del_1
+   ! Allocatable arrays for default critical properties for various components:
+   real(pr), allocatable :: tc_def(:)  !! Define critical temperatures [K]
+   real(pr), allocatable :: pc_def(:)  !! Define critical pressures [bar]
+   real(pr), allocatable :: om_def(:)  !! Define acentric factors
+
+   ! Global coefficients for critical property correlations:
+   ! Coefficients for critical temperature (Tc) correlation:
+   real(pr) :: c1, c2, c3, c4
+   ! Coefficients for critical pressure (Pc) correlation:
+   real(pr) :: d1_p, d2, d3, d4, d5
+   ! Coefficients for the modification function (m_funtion) used in 
+   ! the correlations:
+   real(pr) :: e1, e2, e3, e4
+   ! Additional coefficients for acentric factor (omega) calculation via a 
+   ! quadratic expression:
+   real(pr) :: a, b, c0, del_1  
+   ! 'del_1' is an additional parameter (currently not used).
 
 contains
 
    subroutine get_parameteres_for_critical(eos)
+      !! This subroutine initializes the define componets critical property 
+      !! arrays (tc_def, pc_def,om_def) and sets the global correlation 
+      !! coefficients based on the specified equation of state (EOS).
+      !!
+      !! The default critical arrays are defined element-wise for different 
+      !! components.
+      !!
+      !! Depending on the input string 'eos', the subroutine assigns 
+      !! different sets of coefficients:
+      !!    - "SRK"  : Soave-Redlich-Kwong EOS coefficients.
+      !!    - "PR"   : Peng-Robinson EOS coefficients (original Pedersen values).
+      !!    - "RKPR" : Modified Peng-Robinson (RKPR) EOS coefficients.
+      !!
+      !! Input:
+      !!   eos : A character string specifying the equation of state to be used.
+      !!         Supported values: "SRK", "PR", "RKPR".
+      !!
+      !! The coefficients set in this subroutine are used by other modules to
+      !! calculate the fluid's critical temperature (Tc), pressure (Pc), and 
+      !! acentric factor (omega).
+      
       implicit none
       character(len=*) :: eos
 
+      ! Define default critical properties for various components:
       tc_def = [126.2, 304.21, 190.564, 305.32, 369.83, 408.14, 425.12, 460.43, 469.7]
       pc_def = [34.0, 73.83, 45.99, 48.72, 42.48, 36.48, 37.96, 33.81, 33.7]
       om_def = [0.038, 0.224, 0.012, 0.099, 0.152, 0.181, 0.20, 0.228, 0.252]
 
+      ! Set correlation coefficients based on the specified EOS.
       select case(eos)
 
        case("SRK")
+         ! For the Soave-Redlich-Kwong (SRK) EOS:
          c1 = 1.6312d2
          c2 = 8.6052d1
          c3 = 4.3475d-1
