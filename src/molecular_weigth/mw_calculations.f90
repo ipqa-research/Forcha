@@ -162,18 +162,30 @@ contains
          ! add line by oscar.
 
          ! selection best feasible regression line
-         if(a_blr < a_lim)then
-            ! Added by oscar 05/12/2023.se elimina por que se agregan las
-            ! restricciones para characterization%C>12 y characterization%C<14.
+
+
+         if (C > 14)then
             a = a_lim
             b = b_lim
-         else  ! this line was removed call Line_C60_max
-            if(a_blr > a_60)then
+         else
+            if (C < 12)then
                a = a_60
                b = b_60
             else
-               a = a_blr
-               b = b_blr
+               if(a_blr < a_lim)then
+                  ! Added by oscar 05/12/2023.se elimina por que se agregan las
+                  ! restricciones para characterization%C>12 y characterization%C<14.
+                  a = a_lim
+                  b = b_lim
+               else  ! this line was removed call Line_C60_max
+                  if(a_blr > a_60)then
+                     a = a_60
+                     b = b_60
+                  else
+                     a = a_blr
+                     b = b_blr
+                  end if
+               end if
             end if
          end if
 
@@ -211,6 +223,8 @@ contains
          plus_mw_cal = sum(product_z_mw_plus_i(1:i))/plus_z
          difference = plus_mw_cal-plus_mw
          scn_i = [scn, carbon_number_plus(1:i)]
+         !!temporal
+         print*, a,b
       end associate
 
       ! Save outputs values into characterization structure
@@ -219,6 +233,7 @@ contains
       characterization%carbon_number_plus =  carbon_number_plus(1:i)
       characterization%nc_plus = i
       characterization%scn_i = scn_i
+      
 
    end subroutine difference_mw_plus
 

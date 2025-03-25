@@ -22,7 +22,7 @@ contains
 
       real(pr) :: a, b !! parameters of pedersen distribution funtion 
       integer :: i !! Iteration variable
-      integer, parameter :: n = 181 !! Parameter for defined maximum carbon number
+      integer, parameter :: n = 74 !! Parameter for defined maximum carbon number
       real(pr) :: cn(n) !! Vector of carbon numbers
       real(pr) :: z_i(n) !! Vector of compositions of residual fraction
       real(pr) :: m_i(n) !! Vector of molecular weights of residual fraction
@@ -31,7 +31,7 @@ contains
 
       ! compute the carbon number vector
       do i = 1, n
-         cn(i) = 20.0d0 + i - 1
+         cn(i) = 7.0d0 + i - 1
       end do
 
       ! define parameters to optimizar into x vector 
@@ -65,8 +65,8 @@ program pedersen_characterize
    real(pr) :: x(2), F
    type(ExpData) :: exp
 
-   exp%zplus = [0.1107]
-   exp%mplus = [419.3]
+   exp%zplus = [0.0545]
+   exp%mplus = [158]
 
    ! Initial guess
    x = [   -9.3214408744470914E-002,  -2.7557414112453325  ]
